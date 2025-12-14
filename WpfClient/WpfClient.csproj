@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{07F8B195-D44B-4389-AD58-D9FC4600DAD2}</ProjectGuid>
+    <ProjectGuid>{6711AFA7-FCC7-4EC9-88A3-BD0BCD380D20}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>App</RootNamespace>
-    <AssemblyName>App</AssemblyName>
+    <RootNamespace>WpfClient</RootNamespace>
+    <AssemblyName>WpfClient</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -93,6 +93,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\FirstQuarter.png" />
+    <Resource Include="Assets\FullMoon.png" />
+    <Resource Include="Assets\LastQuarter.png" />
+    <Resource Include="Assets\NewMoon.png" />
+    <Resource Include="Assets\WaningCrescent.png" />
+    <Resource Include="Assets\WaningGibbous.png" />
+    <Resource Include="Assets\WaxingCrescent.png" />
+    <Resource Include="Assets\WaxingGibbous.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
