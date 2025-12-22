@@ -28,19 +28,38 @@ namespace Core
             ApiKey = Environment.GetEnvironmentVariable("IPGEO_API_KEY");
 
             if (string.IsNullOrWhiteSpace(ApiKey))
-                throw new InvalidOperationException("App.config is missing API URL");
+                throw new InvalidOperationException("missing API KEY environment variable");
 
             if (string.IsNullOrWhiteSpace(ApiUrl))
-                throw new InvalidOperationException("missing API KEY environment variable");
+                throw new InvalidOperationException("config is missing API URL");
         }
 
-        public async Task<AstronomyResponseDto> GetAstronomyAsync(
-            double lat, double lon, DateTime? date = null
-        ){
-            string url = BuildUrl(lat, lon, date);
+        public async Task<AstronomyTimeSeriesDto> getAstronomyWeekAsync(double lat, double lon, DateTimeOffset beg, DateTimeOffset end , string ianaId)
+        {
+
+            string url = BuildUrlAstronomyTimeSeries(lat, lon, beg.DateTime, end.DateTime, ianaId);
 
             using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url))
-            using (HttpResponseMessage response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false))
+            using (HttpResponseMessage response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+            {
+
+                string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new HttpRequestException($"API error {response.StatusCode} : {responseBody}");
+
+                return JsonConvert.DeserializeObject<AstronomyTimeSeriesDto>(responseBody);
+            }
+        }
+
+
+        public async Task<AstronomyResponseDto> GetAstronomyAsync(
+            double lat, double lon, string ianaId, DateTime? date = null
+        ){
+            string url = BuildUrlAstronomy(lat, lon, ianaId, date);
+
+            using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url))
+            using (HttpResponseMessage response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
             {
 
                 string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -52,11 +71,21 @@ namespace Core
             }
         }
 
-        private string BuildUrl(double lat, double lon, DateTime? date)
+        private string BuildUrlAstronomy(double lat, double lon, string ianaId, DateTime? date)
         {
-            string url = $"{ApiUrl}/v2/astronomy?apiKey={Uri.EscapeDataString(ApiKey)}&lat={Uri.EscapeDataString(lat.ToString())}&long={Uri.EscapeDataString(lon.ToString())}";
+            string url = $"{ApiUrl}/v2/astronomy?apiKey={Uri.EscapeDataString(ApiKey)}" +
+                $"&lat={Uri.EscapeDataString(lat.ToString(CultureInfo.InvariantCulture))}&long={Uri.EscapeDataString(lon.ToString(CultureInfo.InvariantCulture))}&time_zone={Uri.EscapeDataString(ianaId)}";
 
             if (date.HasValue) url += $"&date={date.Value:yyyy-MM-dd}";
+
+            return url;
+        }
+
+        private string BuildUrlAstronomyTimeSeries(double lat, double lon, DateTime beg, DateTime end, string ianaId)
+        {
+            string url = $"{ApiUrl}/v2/astronomy/timeSeries?apiKey={Uri.EscapeDataString(ApiKey)}"
+                + $"&lat={Uri.EscapeDataString(lat.ToString(CultureInfo.InvariantCulture))}&long={Uri.EscapeDataString(lon.ToString(CultureInfo.InvariantCulture))}"
+                + $"&dateStart={Uri.EscapeDataString(beg.ToString("yyyy-MM-dd"))}&dateEnd={Uri.EscapeDataString(end.ToString("yyyy-MM-dd"))}&time_zone={Uri.EscapeDataString(ianaId)}";
 
             return url;
         }
