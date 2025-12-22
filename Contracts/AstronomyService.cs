@@ -77,7 +77,7 @@ namespace Contracts
                 MoonParallacticAngle = dto.MoonParallacticAngle,
                 LunarAge = dto.LunarAge,
                 MoonPhase = dto.MoonPhase,
-                NextMoonPhases = (List<MoonPhaseTimeDto>)dto.NextMoonPhases.Select(e=>new MoonPhaseTimeContract {Phase = e.Phase, TimeUtc = e.TimeUtc }),                
+                NextMoonPhases = dto.NextMoonPhases.Select(e=>new MoonPhaseTimeContract {Phase = e.Phase, TimeUtc = e.TimeUtc }).ToList(),                
             };
         }
 
@@ -224,7 +224,7 @@ namespace Contracts
         [DataMember]
         public MoonPhases MoonPhase { get; set; }
         [DataMember]
-        public List<MoonPhaseTimeDto> NextMoonPhases { get; set; }
+        public List<MoonPhaseTimeContract> NextMoonPhases { get; set; }
     }
 
     [DataContract]

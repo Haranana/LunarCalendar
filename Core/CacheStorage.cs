@@ -47,7 +47,7 @@ namespace Core
         public bool IsInstantFresh(TimeSpan maxTtl)
         {
             return InstantCacheData != null
-                && (DateTimeOffset.Now - InstantCacheData.LastUpdateTime) < maxTtl
+                && (DateTimeOffset.UtcNow - InstantCacheData.LastUpdateTime) < maxTtl
                 && (DateTimeOffset.UtcNow.Date == InstantCacheData.LastUpdateTime.Date);
         }
 

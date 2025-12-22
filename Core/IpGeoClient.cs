@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -18,10 +19,12 @@ namespace Core
         private readonly HttpClient HttpClient;
         private readonly string ApiKey;
         private readonly string ApiUrl;
+        private LoggingService loggingService;
 
-        public IpGeoClient(HttpClient httpClient)
+        public IpGeoClient(HttpClient httpClient , LoggingService loggingService)
         {
             HttpClient = httpClient ?? throw new ArgumentNullException("HttpClient is null");
+            this.loggingService = loggingService;
 
             NameValueCollection AllAppSettings = ConfigurationManager.AppSettings;           
             ApiUrl = AllAppSettings["IPGEO_URL"];
@@ -46,7 +49,11 @@ namespace Core
                 string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
+                {
+                    loggingService.WriteWarning($"API astronomy timeSeries request failed, error: {response.StatusCode}. lat={lat}, lon={lon}, tz={ianaId}");
                     throw new HttpRequestException($"API error {response.StatusCode} : {responseBody}");
+
+                }
 
                 return JsonConvert.DeserializeObject<AstronomyTimeSeriesDto>(responseBody);
             }
@@ -65,7 +72,10 @@ namespace Core
                 string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
+                {
+                    loggingService.WriteWarning($"API astronomy request failed, error: {response.StatusCode}. lat={lat}, lon={lon}, tz={ianaId}");
                     throw new HttpRequestException($"API error {response.StatusCode} : {responseBody}");
+                }
 
                 return JsonConvert.DeserializeObject<AstronomyResponseDto>(responseBody);
             }

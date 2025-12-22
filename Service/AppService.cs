@@ -21,12 +21,14 @@ namespace Service
 
         private readonly CacheStorage cacheStorage;
         private readonly IpGeoClient ipGeoClient;
+        private LoggingService loggingService;
         private readonly SemaphoreSlim refreshGate = new SemaphoreSlim(1, 1);
 
-        public AstronomyService(CacheStorage cacheStorage, IpGeoClient ipGeoClient)
+        public AstronomyService(CacheStorage cacheStorage, IpGeoClient ipGeoClient, LoggingService loggingService)
         {
             this.cacheStorage = cacheStorage;
             this.ipGeoClient = ipGeoClient;
+            this.loggingService = loggingService;
         }
 
         public LocationCacheDataContract GetLocationData()
@@ -36,6 +38,7 @@ namespace Service
 
         public async Task UpdateLocationData(double lat, double lon)
         {
+            loggingService.WriteInfo($"Requested location update for lat: {lat} and lon:{lon}");
             LocationCacheData oldLoc = cacheStorage.LocationCacheData;
             TimeZoneInfo tz = TimeZoneUtil.GetTimeZone(lat, lon);
             string ianaId = TimeZoneUtil.GetIanaTimeZoneId(lat, lon);
@@ -74,6 +77,10 @@ namespace Service
                 cacheStorage.RefreshInstantData(astronomyDto.Astronomy);
                 cacheStorage.RefreshWeeklyData(timeSeriesDto);
             }
+            catch
+            {
+                loggingService.WriteError($"Location updated failed for lat: {lat} and lon:{lon}");
+            }
             finally
             {
                 refreshGate.Release();
@@ -98,6 +105,7 @@ namespace Service
                     return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData);
 
                 }
+                loggingService.WriteInfo("requesting instant data refresh");
 
                 LocationCacheData loc = cacheStorage.LocationCacheData;
                 AstronomyResponseDto dto = await ipGeoClient.GetAstronomyAsync(
@@ -107,6 +115,13 @@ namespace Service
                 );
 
                 cacheStorage.RefreshInstantData(dto.Astronomy);
+            }
+            catch(Exception ex)
+            {
+                loggingService.WriteError("Refreshing instant data failed", ex);
+                if (cacheStorage.InstantCacheData != null)
+                    return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData);
+                throw;
             }
             finally
             {
@@ -132,6 +147,7 @@ namespace Service
                 {
                     return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
                 }
+                loggingService.WriteInfo("requesting weekly data refresh");
 
                 LocationCacheData loc = cacheStorage.LocationCacheData;
 
@@ -143,6 +159,13 @@ namespace Service
                     loc.IanaTimeZoneId
                 );
                 cacheStorage.RefreshWeeklyData(dto);
+            }
+            catch(Exception ex) {
+            
+                loggingService.WriteError("Refreshing instant data failed", ex);
+                if (cacheStorage.InstantCacheData != null)
+                    return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
+                throw;
             }
             finally
             {
@@ -159,6 +182,7 @@ namespace Service
         private IpGeoClient ipGeoClient;
         private AstronomyService astronomyService;
         private ServiceHost serviceHost;
+        private LoggingService loggingService;
        
         public AppService()
         {
@@ -166,12 +190,17 @@ namespace Service
         }
 
         protected override void OnStart(string[] args)
-        {
+        {            
+            loggingService = new LoggingService("AstronomyService" , "Application");            
             cacheStorage = new CacheStorage();
-            ipGeoClient = new IpGeoClient(new System.Net.Http.HttpClient());
-            astronomyService = new AstronomyService(cacheStorage, ipGeoClient);
+
+            ipGeoClient = new IpGeoClient(new System.Net.Http.HttpClient(), loggingService);
+            astronomyService = new AstronomyService(cacheStorage, ipGeoClient, loggingService);
+
             serviceHost = new ServiceHost(astronomyService);
             serviceHost.Open();
+
+            loggingService.WriteInfo("Service starting");
 
             Task.Run(async () =>
             {
@@ -181,7 +210,7 @@ namespace Service
                 }
                 catch (Exception ex)
                 {
-                   //log to eventLog to be implemented
+                    loggingService.WriteInfo("Service failed to start");
                 }
             });
 
@@ -206,10 +235,14 @@ namespace Service
 
             cacheStorage.RefreshInstantData(astronomyDto.Astronomy);
             cacheStorage.RefreshWeeklyData(timeSeriesDto);
+
+            loggingService.WriteInfo("Initial data fetched from API");
         }
 
         protected override void OnStop()
         {
+            loggingService?.WriteInfo("Service stopping");
+
             try { serviceHost?.Close(); }
             catch { serviceHost?.Abort(); }
         }
