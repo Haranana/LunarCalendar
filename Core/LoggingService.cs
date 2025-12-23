@@ -47,12 +47,12 @@ namespace Core
         private void Write(EventLogEntryType type, string message, Exception ex)
         {
             string text = message;
-            if(text.Length > 1000)
-            {
-                text = text.Substring(0, 1000);
-            }
             if (ex != null) {
-                text = text + Environment.NewLine + ex.ToString();
+                text = text + Environment.NewLine + ex.ToString() + ex;
+            }
+            if (text.Length > 10000)
+            {
+                text = text.Substring(0, 10000);
             }
 
             if (eventLog != null)

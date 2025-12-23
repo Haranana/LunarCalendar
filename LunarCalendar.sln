@@ -11,6 +11,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfClient", "WpfClient\WpfClient.csproj", "{6711AFA7-FCC7-4EC9-88A3-BD0BCD380D20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{1268BF8C-ACBE-453C-846A-08E41A524ED8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{6711AFA7-FCC7-4EC9-88A3-BD0BCD380D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6711AFA7-FCC7-4EC9-88A3-BD0BCD380D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6711AFA7-FCC7-4EC9-88A3-BD0BCD380D20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1268BF8C-ACBE-453C-846A-08E41A524ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1268BF8C-ACBE-453C-846A-08E41A524ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1268BF8C-ACBE-453C-846A-08E41A524ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1268BF8C-ACBE-453C-846A-08E41A524ED8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

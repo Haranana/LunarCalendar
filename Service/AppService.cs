@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.ServiceModel;
 using System.ServiceProcess;
 using System.Text;
@@ -162,7 +163,7 @@ namespace Service
             }
             catch(Exception ex) {
             
-                loggingService.WriteError("Refreshing instant data failed", ex);
+                loggingService.WriteError("Refreshing weekly data failed", ex);
                 if (cacheStorage.InstantCacheData != null)
                     return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
                 throw;
@@ -173,6 +174,29 @@ namespace Service
             }
 
             return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
+        }
+
+    }
+
+    public class AppTester
+    {
+        public static void RunAsConsole()
+        {
+            var cacheStorage = new CacheStorage();
+            var logging = new LoggingService("AstronomyService", "Application");
+            var ipGeo = new IpGeoClient(new HttpClient(), logging);
+            var svc = new AstronomyService(cacheStorage, ipGeo, logging);
+
+            using (var host = new ServiceHost(svc))
+            {
+                host.Open(); // <-- TO jest moment “serwer działa”
+
+                
+                Console.WriteLine("WCF host is running. Press ENTER to stop.");
+                Console.ReadLine();
+
+                host.Close();
+            }
         }
 
     }

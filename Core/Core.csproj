@@ -60,6 +60,8 @@
   <ItemGroup>
     <Compile Include="Astronomy.cs" />
     <Compile Include="CacheStorage.cs" />
+    <Compile Include="LoggingService.cs" />
+    <Compile Include="Mappers.cs" />
     <Compile Include="IpGeoClient.cs" />
     <Compile Include="Dtos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

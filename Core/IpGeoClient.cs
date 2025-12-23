@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -30,6 +29,8 @@ namespace Core
             ApiUrl = AllAppSettings["IPGEO_URL"];
             ApiKey = Environment.GetEnvironmentVariable("IPGEO_API_KEY");
 
+            loggingService.WriteInfo("IPGEO_API_KEY present=" + (!string.IsNullOrWhiteSpace(ApiKey)));
+
             if (string.IsNullOrWhiteSpace(ApiKey))
                 throw new InvalidOperationException("missing API KEY environment variable");
 
@@ -54,8 +55,13 @@ namespace Core
                     throw new HttpRequestException($"API error {response.StatusCode} : {responseBody}");
 
                 }
+                else
+                {
+                    var bodyToWrite = responseBody.Length > 1000 ? responseBody.Substring(0, 1000) : responseBody;
+                    loggingService.WriteInfo($"API call to url: {url}{Environment.NewLine}API returned: {response.StatusCode}{Environment.NewLine}{bodyToWrite}");
+                }
 
-                return JsonConvert.DeserializeObject<AstronomyTimeSeriesDto>(responseBody);
+                    return JsonConvert.DeserializeObject<AstronomyTimeSeriesDto>(responseBody);
             }
         }
 

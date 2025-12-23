@@ -14,12 +14,15 @@ namespace Service
         /// </summary>
         static void Main()
         {
+            /*
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
                 new AppService()
             };
-            ServiceBase.Run(ServicesToRun);
+            ServiceBase.Run(ServicesToRun);*/
+
+            AppTester.RunAsConsole();
         }
     }
 }

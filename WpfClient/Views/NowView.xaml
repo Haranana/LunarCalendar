@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="WpfClient.Views.NowView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 1: NAV -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,6">
+            <Button Width="90" Margin="4,0"
+                    Content="Teraz"
+                    Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            <Button Width="90" Margin="4,0"
+                    Content="Tydzień"
+                    Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            <Button Width="90" Margin="4,0"
+                    Content="Ustawienia"
+                    Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </StackPanel>
+
+        <!-- Row 2: Day / Night toggle -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,6">
+            <Button Width="110" Margin="4,0" Content="Tryb dzienny" Command="{Binding SetDayCommand}"/>
+            <Button Width="110" Margin="4,0" Content="Tryb nocny" Command="{Binding SetNightCommand}"/>
+        </StackPanel>
+
+        <!-- Row 3: Header with date/time + illustration placeholder -->
+        <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="Gray" Margin="0,0,0,6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="110"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock FontSize="8" FontWeight="Bold"
+                               Text="{Binding Status}"/>
+                    <TextBlock FontSize="12" Opacity="0.8"
+                               Text="{Binding IsNight, StringFormat=Tryb nocny: {0}}"/>
+                </StackPanel>
+
+                <!-- placeholder na ilustrację (moon/sun) -->
+                <Border Grid.Column="1" Background="#22000000" CornerRadius="8" Padding="6">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Text="IMG"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Row 4: Data -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" FontWeight="Bold" Text="Dane aktualne:" Margin="0,0,0,4"/>
+
+            <TextBlock Grid.Row="1" Text="{Binding Data.MoonPhase, StringFormat=Faza: {0}}"/>
+            <TextBlock Grid.Row="2" Text="{Binding Data.MoonIlluminationPercentage, StringFormat=Oświetlenie: {0:N1}%}"/>
+            <TextBlock Grid.Row="3" Text="{Binding Data.LunarAge, StringFormat=Wiek (dni): {0:N2}}"/>
+            <TextBlock Grid.Row="4" Text="{Binding Data.SunAltitude, StringFormat=Wysokość Słońca: {0:N2}}"/>
+
+            <TextBlock Grid.Row="5" Opacity="0.7" TextWrapping="Wrap"
+                       Text="Tu dołożysz resztę pól (azimuth, distance, next phases itd.)."/>
+        </Grid>
+
+        <!-- Row 5: Refresh -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Width="120" Content="Odśwież teraz" Command="{Binding RefreshCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

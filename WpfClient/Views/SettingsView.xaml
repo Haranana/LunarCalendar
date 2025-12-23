@@ -1,0 +1,69 @@
+﻿<UserControl x:Class="WpfClient.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- NAV -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,6">
+            <Button Width="90" Margin="4,0" Content="Teraz"
+                    Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            <Button Width="90" Margin="4,0" Content="Tydzień"
+                    Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            <Button Width="90" Margin="4,0" Content="Ustawienia"
+                    Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </StackPanel>
+
+        <!-- Location info -->
+        <Border Grid.Row="1" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="Gray" Margin="0,0,0,6">
+            <StackPanel>
+                <TextBlock FontWeight="Bold" Text="Aktualna lokalizacja:"/>
+                <TextBlock Text="{Binding Location.City, StringFormat=Miasto: {0}}"/>
+                <TextBlock Text="{Binding Location.CountryName, StringFormat=Kraj: {0}}"/>
+                <TextBlock Text="{Binding Location.IanaTimeZoneId, StringFormat=Strefa: {0}}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Inputs -->
+        <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="Gray">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="Zmień lokalizację (lat/lon):" Margin="0,0,0,6"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Lat:"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LatText, UpdateSourceTrigger=PropertyChanged}" Margin="6,2"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Text="Lon:"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding LonText, UpdateSourceTrigger=PropertyChanged}" Margin="6,2"/>
+
+                <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                    <Button Width="150" Margin="4,0" Content="Wczytaj lokalizację" Command="{Binding LoadLocationCommand}"/>
+                    <Button Width="150" Margin="4,0" Content="Zmień lokalizację" Command="{Binding UpdateLocationCommand}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Opacity="0.8" Text="{Binding Status}" Margin="0,8,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- Force refresh -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+            <Button Width="170" Content="Wymuś odświeżenie danych" Command="{Binding ForceRefreshAllCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
