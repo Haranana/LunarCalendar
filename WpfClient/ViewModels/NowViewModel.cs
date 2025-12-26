@@ -76,13 +76,6 @@ namespace WpfClient.ViewModels
             set => Set(ref eveningBlueHour, value);
         }
 
-        private bool isNight;
-        public bool IsNight
-        {
-            get => isNight;
-            set => Set(ref isNight, value);
-        }
-
         private string moonPhaseName;
         public string MoonPhaseName
         {
@@ -125,10 +118,6 @@ namespace WpfClient.ViewModels
         public NowViewModel(AstronomyServiceClient svc)
         {
             serviceClient = svc;
-
-            SetDayCommand = new RelayCommand(() => IsNight = false);
-            SetNightCommand = new RelayCommand(() => IsNight = true);
-
             RefreshCommand = new AsyncRelayCommand(RefreshAsync);
         }
 

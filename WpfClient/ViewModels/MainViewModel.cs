@@ -13,6 +13,7 @@ namespace WpfClient.ViewModels
         private readonly AstronomyServiceClient _svc;
 
         public NowViewModel Now { get; }
+        public NowViewDayModel NowDay { get; }
         public WeekViewModel Week { get; }
         public SettingsViewModel Settings { get; }
 
@@ -24,6 +25,8 @@ namespace WpfClient.ViewModels
         }
 
         public RelayCommand GoNowCommand { get; }
+
+        public RelayCommand GoNowDayCommand { get; }
         public RelayCommand GoWeekCommand { get; }
         public RelayCommand GoSettingsCommand { get; }
 
@@ -32,10 +35,12 @@ namespace WpfClient.ViewModels
             _svc = new AstronomyServiceClient();
 
             Now = new NowViewModel(_svc);
+            NowDay = new NowViewDayModel(_svc);
             Week = new WeekViewModel(_svc);
             Settings = new SettingsViewModel(_svc, Now, Week);
 
             GoNowCommand = new RelayCommand(() => CurrentPage = Now);
+            GoNowDayCommand = new RelayCommand(()=>CurrentPage = NowDay);
             GoWeekCommand = new RelayCommand(() => CurrentPage = Week);
             GoSettingsCommand = new RelayCommand(() => CurrentPage = Settings);
 

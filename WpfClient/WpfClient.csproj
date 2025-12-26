@@ -62,11 +62,15 @@
     <Compile Include="MVVM\ViewModelBase.cs" />
     <Compile Include="Services\AstronomyServiceClient.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\NowViewDayModel.cs" />
     <Compile Include="ViewModels\NowViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\WeekViewModel.cs" />
     <Compile Include="Views\NowView.xaml.cs">
       <DependentUpon>NowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NowViewDay.xaml.cs">
+      <DependentUpon>NowViewDay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
@@ -87,6 +91,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\NowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NowViewDay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -125,7 +133,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\Sun.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\FirstQuarter.png" />
     <Resource Include="Assets\FullMoon.png" />
