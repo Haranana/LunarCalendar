@@ -30,6 +30,9 @@ namespace Core
             {
                 LastUpdateTime = updateTime,
 
+                Date = ParseDate(a.Date),
+                CurrentTime = ParseTimeSpan(a.CurrentTime),
+
                 SunAltitude = a.SunAltitude,
                 SunDistance = a.SunDistance,
                 SunAzimuth = a.SunAzimuth,
@@ -83,6 +86,8 @@ namespace Core
                 SunDistance = a.SunDistance,
                 SunAzimuth = a.SunAzimuth,
                 DayLength = ParseTimeSpan(a.DayLength),
+                Sunrise = ParseLocalTime(localDate, a.Sunrise, tz),
+                Sunset = ParseLocalTime(localDate, a.Sunset, tz),
 
                 MorningAstronomicalTwilightBegin = ParseLocalTime(localDate, a.Morning.AstronomicalTwilightBegin, tz),
                 MorningAstronomicalTwilightEnd = ParseLocalTime(localDate, a.Morning.AstronomicalTwilightEnd, tz),
@@ -100,7 +105,8 @@ namespace Core
                 MoonAzimuth = a.MoonAzimuth,
                 MoonParallacticAngle = a.MoonParallacticAngle,
                 MoonIlluminationPercentage = ParseDoublePercent(a.MoonIlluminationPercentage),
-
+                Moonrise = ParseLocalTime(localDate, a.Moonrise, tz),
+                Moonset = ParseLocalTime(localDate, a.Moonset, tz),
                 NightLength = TimeSpan.FromDays(1).Subtract(ParseTimeSpan(a.DayLength)),
                 LunarAge = Astronomy.GetSynodicAge(dtoUtc),
                 MoonPhase = Astronomy.GetMoonPhase(dtoUtc),
@@ -142,32 +148,46 @@ namespace Core
         }
 
         //returns DateTimeOffset of given date and hours in utc
-        private static DateTimeOffset? ParseLocalTime(DateTime date, string hhMm, TimeZoneInfo tz)
+        private static DateTimeOffset? ParseLocalTime(DateTime date, string value, TimeZoneInfo tz)
         {
-            if (string.IsNullOrWhiteSpace(hhMm))
-            {
-                //throw new FormatException("Missing time value");
+            if (string.IsNullOrWhiteSpace(value))
                 return null;
-            }
 
-            var s = hhMm.Trim();
-            if (!TimeSpan.TryParseExact(s, new[] { @"hh\:mm", @"h\:mm", @"hh\:mm\:ss", @"h\:mm\:ss" }, Inv, out var tod)) {
-                //throw new FormatException("Invalid time format ");
-                return null;
-            }
+            var s = value.Trim();
+            var dtFormats = new[]
+            {
+                "yyyy-MM-dd HH:mm",
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd HH:mm:ss.fff"
+            };
+
+            if (DateTime.TryParseExact(s, dtFormats, Inv, DateTimeStyles.None, out var parsedDt))
+            {
                 
+                var localUnspec = DateTime.SpecifyKind(parsedDt, DateTimeKind.Unspecified);
 
-            var localUnspec = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Unspecified).Add(tod);
+                if (tz.IsInvalidTime(localUnspec))
+                    return null;
 
-            if (tz.IsInvalidTime(localUnspec))
-            {
-                //do { localUnspec = localUnspec.AddMinutes(1); }
-                //while (tz.IsInvalidTime(localUnspec));
-                return null;
+                var localWithOffset = new DateTimeOffset(localUnspec, tz.GetUtcOffset(localUnspec));
+                return localWithOffset.ToUniversalTime(); 
+                                     
             }
+ 
+            //fallback: only Time
+            if (!TimeSpan.TryParseExact(s,
+                new[] { @"hh\:mm", @"h\:mm", @"hh\:mm\:ss", @"h\:mm\:ss" },
+                Inv,
+                out var tod))
+                return null;
 
-            var localWithOffset = new DateTimeOffset(localUnspec, tz.GetUtcOffset(localUnspec));
-            return localWithOffset.ToUniversalTime();
+            var localUnspec2 = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Unspecified).Add(tod);
+
+            if (tz.IsInvalidTime(localUnspec2))
+                return null;
+
+            var localWithOffset2 = new DateTimeOffset(localUnspec2, tz.GetUtcOffset(localUnspec2));
+            return localWithOffset2.ToUniversalTime(); 
         }
 
         private static TimeSpan ParseTimeSpan(string hms)
@@ -177,7 +197,7 @@ namespace Core
 
             var s = hms.Trim();
 
-            if (TimeSpan.TryParseExact(s, new[] { @"hh\:mm\:ss", @"h\:mm\:ss", @"hh\:mm", @"h\:mm", @"mm\:ss" }, Inv, out var ts))
+            if (TimeSpan.TryParseExact(s, new[] { @"hh\:mm\:ss", @"h\:mm\:ss", @"hh\:mm", @"h\:mm", @"mm\:ss", @"hh\:mm\:ss.fff" }, Inv, out var ts))
                 return ts;
 
             if (TimeSpan.TryParse(s, Inv, out ts))

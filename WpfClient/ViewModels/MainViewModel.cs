@@ -41,7 +41,6 @@ namespace WpfClient.ViewModels
 
             CurrentPage = Now;
 
-            // start: od razu pobierz dane
             Now.RefreshCommand.Execute(null);
             Week.RefreshCommand.Execute(null);
             Settings.LoadLocationCommand.Execute(null);

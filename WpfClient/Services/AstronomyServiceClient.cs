@@ -10,34 +10,34 @@ namespace WpfClient.Services
 {
     public sealed class AstronomyServiceClient : IDisposable
     {
-        private readonly ChannelFactory<IAstronomyService> _factory;
+        private readonly ChannelFactory<IAstronomyService> channelFactory;
 
         public AstronomyServiceClient()
         {
-            _factory = new ChannelFactory<IAstronomyService>("AstronomyTcp");
+            channelFactory = new ChannelFactory<IAstronomyService>("AstronomyTcp");
         }
 
         private async Task<T> Call<T>(Func<IAstronomyService, Task<T>> fn)
         {
-            var ch = _factory.CreateChannel();
-            var cc = (IClientChannel)ch;
+            var channel = channelFactory.CreateChannel();
+            var clientChannel = (IClientChannel)channel;
 
             try
             {
-                var result = await fn(ch).ConfigureAwait(false);
-                cc.Close();
+                var result = await fn(channel).ConfigureAwait(false);
+                clientChannel.Close();
                 return result;
             }
             catch
             {
-                cc.Abort();
+                clientChannel.Abort();
                 throw;
             }
         }
 
         private async Task Call(Func<IAstronomyService, Task> fn)
         {
-            var ch = _factory.CreateChannel();
+            var ch = channelFactory.CreateChannel();
             var cc = (IClientChannel)ch;
 
             try
@@ -52,19 +52,14 @@ namespace WpfClient.Services
             }
         }
 
-        public Task<InstantCacheDataContract> GetFreshInstantAsync()
-            => Call(s => s.GetFreshInstant());
+        public Task<InstantCacheDataContract> GetFreshInstantAsync() => Call(s => s.GetFreshInstant());
 
-        public Task<WeeklyCacheDataContract> GetFreshWeeklyAsync()
-            => Call(s => s.GetFreshWeekly());
+        public Task<WeeklyCacheDataContract> GetFreshWeeklyAsync() => Call(s => s.GetFreshWeekly());
 
-        public Task UpdateLocationDataAsync(double lat, double lon)
-            => Call(s => s.UpdateLocationData(lat, lon));
+        public Task UpdateLocationDataAsync(double lat, double lon) => Call(s => s.UpdateLocationData(lat, lon));
 
-        // masz to jako sync w kontrakcie, więc przerzucamy na threadpool:
-        public Task<LocationCacheDataContract> GetLocationDataAsync()
-            => Task.Run(() => {
-                var ch = _factory.CreateChannel();
+        public Task<LocationCacheDataContract> GetLocationDataAsync() => Task.Run(() => {
+                var ch = channelFactory.CreateChannel();
                 var cc = (IClientChannel)ch;
                 try { var r = ch.GetLocationData(); cc.Close(); return r; }
                 catch { cc.Abort(); throw; }
@@ -72,7 +67,11 @@ namespace WpfClient.Services
 
         public void Dispose()
         {
-            try { _factory.Close(); } catch { _factory.Abort(); }
+            try { 
+                channelFactory.Close(); 
+            } catch { 
+                channelFactory.Abort(); 
+            }
         }
     }
 }

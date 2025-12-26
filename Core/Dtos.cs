@@ -57,7 +57,10 @@ namespace Core
         [JsonProperty("evening")]
         public EveningDto Evening { get; set; }
 
-
+        [JsonProperty("sunrise")]
+        public string Sunrise { get; set; }
+        [JsonProperty("sunset")]
+        public string Sunset { get; set; }
 
         [JsonProperty("day_length")]
         public string DayLength { get; set; }
@@ -72,6 +75,10 @@ namespace Core
         public double SunAzimuth { get; set; }
 
 
+        [JsonProperty("moonrise")]
+        public string Moonrise { get; set; }
+        [JsonProperty("moonset")]
+        public string Moonset { get; set; }
 
         [JsonProperty("moon_altitude")]
         public double MoonAltitude { get; set; }

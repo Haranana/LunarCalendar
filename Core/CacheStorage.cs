@@ -72,7 +72,9 @@ namespace Core
         public double SunAltitude { get; set; }
         public double SunDistance { get; set; }
         public double SunAzimuth { get; set; }
-        public TimeSpan DayLength { get; set; } 
+        public TimeSpan DayLength { get; set; }
+        public DateTimeOffset? Sunrise { get; set; }
+        public DateTimeOffset? Sunset { get; set; }
 
         public DateTimeOffset? MorningAstronomicalTwilightBegin { get; set; }
         public DateTimeOffset? MorningAstronomicalTwilightEnd { get; set; }
@@ -85,7 +87,8 @@ namespace Core
         public DateTimeOffset? MorningGoldenHourBegin { get; set; }
         public DateTimeOffset? MorningGoldenHourEnd { get; set; }
 
-
+        public DateTimeOffset? Moonrise { get; set; }
+        public DateTimeOffset? Moonset { get; set; }
         public double MoonAltitude { get; set; }
         public double MoonDistance { get; set; }
         public double MoonAzimuth { get; set; }
@@ -112,6 +115,12 @@ namespace Core
     public class InstantCacheData
     {
         public DateTimeOffset LastUpdateTime { get; set; }
+
+        [JsonProperty("date")]
+        public DateTime Date { get; set; }
+
+        [JsonProperty("current_time")]
+        public TimeSpan CurrentTime { get; set; }
 
         public double SunAltitude { get; set; }
         public double SunDistance { get; set; }

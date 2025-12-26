@@ -12,14 +12,18 @@ namespace WpfClient.MVVM
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string p = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(p));
+        protected void OnPropertyChanged([CallerMemberName] string caller = null)
+        {
+            if (PropertyChanged != null) {
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(caller));
+            }
+        }            
 
-        protected bool Set<T>(ref T field, T value, [CallerMemberName] string p = null)
+        protected bool Set<T>(ref T field, T value, [CallerMemberName] string caller = null)
         {
             if (Equals(field, value)) return false;
             field = value;
-            OnPropertyChanged(p);
+            OnPropertyChanged(caller);
             return true;
         }
     }

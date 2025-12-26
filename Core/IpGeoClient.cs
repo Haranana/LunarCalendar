@@ -57,7 +57,7 @@ namespace Core
                 }
                 else
                 {
-                    var bodyToWrite = responseBody.Length > 1000 ? responseBody.Substring(0, 1000) : responseBody;
+                    var bodyToWrite = responseBody.Length > 5000 ? responseBody.Substring(0, 5000) : responseBody;
                     loggingService.WriteInfo($"API call to url: {url}{Environment.NewLine}API returned: {response.StatusCode}{Environment.NewLine}{bodyToWrite}");
                 }
 
@@ -81,6 +81,11 @@ namespace Core
                 {
                     loggingService.WriteWarning($"API astronomy request failed, error: {response.StatusCode}. lat={lat}, lon={lon}, tz={ianaId}");
                     throw new HttpRequestException($"API error {response.StatusCode} : {responseBody}");
+                }
+                else
+                {
+                    var bodyToWrite = responseBody.Length > 1000 ? responseBody.Substring(0, 1000) : responseBody;
+                    loggingService.WriteInfo($"API call to url: {url}{Environment.NewLine}API returned: {response.StatusCode}{Environment.NewLine}{bodyToWrite}");
                 }
 
                 return JsonConvert.DeserializeObject<AstronomyResponseDto>(responseBody);

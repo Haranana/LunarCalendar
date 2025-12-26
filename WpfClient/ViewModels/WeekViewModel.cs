@@ -47,7 +47,7 @@ namespace WpfClient.ViewModels
         {
             try
             {
-                Status = "Odświeżanie tygodnia...";
+                Status = "Refreshing data";
                 var week = await _svc.GetFreshWeeklyAsync().ConfigureAwait(true);
 
                 Days.Clear();
@@ -59,7 +59,7 @@ namespace WpfClient.ViewModels
             }
             catch
             {
-                Status = "Błąd odświeżania tygodnia.";
+                Status = "Data couldn't be refreshed";
             }
         }
     }

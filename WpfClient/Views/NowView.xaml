@@ -8,51 +8,111 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Row 1: NAV -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,6">
-            <Button Width="90" Margin="4,0"
-                    Content="Teraz"
-                    Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <Button Width="90" Margin="4,0"
-                    Content="Tydzień"
-                    Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <Button Width="90" Margin="4,0"
-                    Content="Ustawienia"
-                    Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="0,0,0,4" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Row 2: Day / Night toggle -->
-        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,6">
-            <Button Width="110" Margin="4,0" Content="Tryb dzienny" Command="{Binding SetDayCommand}"/>
-            <Button Width="110" Margin="4,0" Content="Tryb nocny" Command="{Binding SetNightCommand}"/>
-        </StackPanel>
+            <Button Grid.Column="0" Style="{StaticResource NavButton}"
+           
+            Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                <Image Source="{StaticResource StarIcon}" Width="24" Height="24"/>
+            </Button>
 
-        <!-- Row 3: Header with date/time + illustration placeholder -->
-        <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="Gray" Margin="0,0,0,6">
+            <Button Grid.Column="1"  Style="{StaticResource NavButton}"
+            Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                <Image Source="{StaticResource CalendarIcon}" Width="24" Height="24"/>
+            </Button>
+
+            <Button Grid.Column="2"  Style="{StaticResource NavButton}"
+            Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                <Image Source="{StaticResource CogIcon}" Width="24" Height="24"/>
+            </Button>
+
+            <Separator Margin="0,6,0,0" Grid.Row="1" Grid.ColumnSpan="3"/>
+        </Grid>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Style="{StaticResource NavButton}"
+                    Command="{Binding SetDayCommand}">
+                <Image Source="{StaticResource SunIcon}" Width="24" Height="24"/>
+            </Button>
+            <Button Grid.Column="1" Style="{StaticResource NavButton}"
+                    Command="{Binding SetNightCommand}">
+                <Image Source="{StaticResource MoonIcon}" Width="24" Height="24"/>
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" Background="{StaticResource ColorExtreme}" BorderBrush="{StaticResource ColorWeak}" Margin="0,0,0,6">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="125"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="90"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
 
-                <StackPanel>
-                    <TextBlock FontSize="8" FontWeight="Bold"
-                               Text="{Binding Status}"/>
-                    <TextBlock FontSize="12" Opacity="0.8"
-                               Text="{Binding IsNight, StringFormat=Tryb nocny: {0}}"/>
-                </StackPanel>
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" TextAlignment="Center" FontSize="18" FontWeight="Bold" Text="{Binding CurrentDateAndTime}" Margin="0,0,0,4"/>
 
-                <!-- placeholder na ilustrację (moon/sun) -->
-                <Border Grid.Column="1" Background="#22000000" CornerRadius="8" Padding="6">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                               Text="IMG"/>
+                <Grid Grid.Column="0" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Image Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Source="{StaticResource FallingMoonIcon}" Width="24" Height="24"/>
+                    <Image Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Source="{StaticResource ArrowDownIcon}" Width="24" Height="24"/>
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" TextAlignment="Center" Text="{Binding DailyData.Moonset, StringFormat={}{0:HH:mm}}"></TextBlock>
+                </Grid>
+
+                <Grid Grid.Column="2" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Image Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Source="{StaticResource FallingMoonIcon}" Width="24" Height="24"/>
+                    <Image Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Source="{StaticResource ArrowUpIcon}" Width="24" Height="24"/>
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" TextAlignment="Center" Text="{Binding DailyData.Moonrise, StringFormat={}{0:HH:mm}}"></TextBlock>
+                </Grid>
+                <Border Grid.Column="1" Grid.Row="2">
+                    <TextBlock TextAlignment="Center" FontWeight="Bold" FontSize="14" Text="{Binding MoonPhaseName}"></TextBlock>
+                </Border>
+
+
+                <Border Grid.Column="1" Grid.Row="1"  CornerRadius="8" Padding="6">
+                    <Image Source="{Binding CurrentMoonPhaseImage}" />
                 </Border>
             </Grid>
         </Border>
 
-        <!-- Row 4: Data -->
+
         <Grid Grid.Row="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -63,20 +123,224 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" FontWeight="Bold" Text="Dane aktualne:" Margin="0,0,0,4"/>
 
-            <TextBlock Grid.Row="1" Text="{Binding Data.MoonPhase, StringFormat=Faza: {0}}"/>
-            <TextBlock Grid.Row="2" Text="{Binding Data.MoonIlluminationPercentage, StringFormat=Oświetlenie: {0:N1}%}"/>
-            <TextBlock Grid.Row="3" Text="{Binding Data.LunarAge, StringFormat=Wiek (dni): {0:N2}}"/>
-            <TextBlock Grid.Row="4" Text="{Binding Data.SunAltitude, StringFormat=Wysokość Słońca: {0:N2}}"/>
 
-            <TextBlock Grid.Row="5" Opacity="0.7" TextWrapping="Wrap"
-                       Text="Tu dołożysz resztę pól (azimuth, distance, next phases itd.)."/>
+
+            <Border Grid.Row="0" Margin="0,0,0,10">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Row="0" Grid.ColumnSpan="5" Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                        <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Essentials"></TextBlock>
+                        <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                    </Grid>
+
+                    <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="1" Grid.Column="1" Text="Moon Illumination:"/>
+                    <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="2" Grid.Column="1" Text="Synodic Age:"/>
+                    <TextBlock FontSize="14" Grid.Row="1" Grid.Column="3" Text="{Binding Data.MoonIlluminationPercentage, StringFormat={}{0}%}"/>
+                    <TextBlock FontSize="14" Grid.Row="2" Grid.Column="3" Text="{Binding Data.LunarAge, StringFormat={}{0:N2}}"/>
+
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="2" Margin="0,0,0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Row="0" Grid.ColumnSpan="10" Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                    <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Moon Position"></TextBlock>
+                    <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                </Grid>
+
+
+                <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="1" Grid.Column="0" Text="Altitude:"/>
+                <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="2" Grid.Column="0" Text="Distance:"/>
+                <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="1" Grid.Column="2" Text="Azimuth:"/>
+                <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="2" Grid.Column="2" Text="Parallactic:"/>
+
+                <TextBlock FontSize="14" Grid.Row="1" Grid.Column="1" Text="{Binding Data.MoonAltitude ,StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Grid.Row="2" Grid.Column="1" Text="{Binding Data.MoonDistance, StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="1" Grid.Column="3" Text="{Binding Data.MoonAzimuth ,StringFormat={}{0:N2}}"/>
+                <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="2" Grid.Column="3" Text="{Binding Data.MoonParallacticAngle, StringFormat={}{0:N2}}"/>
+
+            </Grid>
+
+
+
+            <Border Grid.Row="3" Margin="0,0,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Grid.ColumnSpan="7" Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                        <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Next Moon Phases"></TextBlock>
+                        <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                    </Grid>
+
+                    <Border Grid.Row="1" Grid.Column="0" Padding="8" CornerRadius="8" BorderThickness="1" Background="{StaticResource ColorExtreme}" BorderBrush="{StaticResource ColorWeak}" Margin="0,0,0,6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Image Grid.Row="0"  Source="/Assets/NewMoon.png" Width="48" />
+                            <TextBlock Grid.Row="1" TextAlignment="Center" Text="New Moon"/>
+                            <TextBlock Grid.Row="2" TextAlignment="Center" Text="{Binding NextNewMoonDate}"/>
+
+
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="2" Padding="8" CornerRadius="8" BorderThickness="1" Background="{StaticResource ColorExtreme}" BorderBrush="{StaticResource ColorWeak}" Margin="0,0,0,6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Image Grid.Row="0" Source="/Assets/FirstQuarter.png" Width="48" />
+                            <TextBlock Grid.Row="1"  TextAlignment="Center" Text="First Quarter"/>
+                            <TextBlock Grid.Row="2"  TextAlignment="Center" Text="{Binding NextFirstQuarterDate}"/>
+
+
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="4" Padding="8" CornerRadius="8" BorderThickness="1" Background="{StaticResource ColorExtreme}" BorderBrush="{StaticResource ColorWeak}" Margin="0,0,0,6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Image Grid.Row="0" Source="/Assets/FullMoon.png" Width="48" />
+                            <TextBlock Grid.Row="1"  TextAlignment="Center" Text="Full Moon"/>
+                            <TextBlock Grid.Row="2" TextAlignment="Center" Text="{Binding NextFullMoonDate}"/>
+
+
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="6" Padding="8" CornerRadius="8" BorderThickness="1" Background="{StaticResource ColorExtreme}" BorderBrush="{StaticResource ColorWeak}" Margin="0,0,0,6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Image Grid.Row="0" Source="/Assets/LastQuarter.png" Width="48" />
+                            <TextBlock Grid.Row="1" TextAlignment="Center" Text="Last Quarter"/>
+                            <TextBlock Grid.Row="2" TextAlignment="Center" Text="{Binding NextLastQuarterDate}"/>
+
+
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+            <Border Grid.Row="4" Margin="0,0,0,8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                        <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Blue Hours"></TextBlock>
+                        <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                    </Grid>
+
+
+
+                    <TextBlock Grid.Row="1"  FontSize="14" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding MorningBlueHour}"/>
+                    <TextBlock Grid.Row="2"  FontSize="14" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding EveningBlueHour}"/>
+                </Grid>
+            </Border>
         </Grid>
 
-        <!-- Row 5: Refresh -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Width="120" Content="Odśwież teraz" Command="{Binding RefreshCommand}"/>
-        </StackPanel>
+        
+        
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" FontSize="8" FontWeight="Bold" VerticalAlignment="Center"
+                    Text="{Binding Status}"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Width="Auto" Style="{StaticResource NavButton}" Command="{Binding RefreshCommand}">
+                    <Image  Grid.Column="0"  HorizontalAlignment="Right" Source="{StaticResource RefreshIcon}" Width="24" Height="24"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+       
     </Grid>
 </UserControl>

@@ -31,6 +31,8 @@ namespace Contracts
                 SunDistance = dto.SunDistance,
                 SunAzimuth = dto.SunAzimuth,
                 DayLength = dto.DayLength,
+                Sunrise = dto.Sunrise,
+                Sunset = dto.Sunset,
                 MorningAstronomicalTwilightBegin = dto.MorningAstronomicalTwilightBegin,
                 MorningAstronomicalTwilightEnd = dto.MorningAstronomicalTwilightEnd,
                 MorningNauticalTwilightBegin = dto.MorningNauticalTwilightBegin,
@@ -49,6 +51,8 @@ namespace Contracts
                 NightLength = dto.NightLength,
                 LunarAge = dto.LunarAge,
                 MoonPhase = dto.MoonPhase,
+                Moonrise = dto.Moonrise,
+                Moonset = dto.Moonset,
                 EveningAstronomicalTwilightBegin = dto.EveningAstronomicalTwilightBegin,
                 EveningAstronomicalTwilightEnd = dto.EveningAstronomicalTwilightEnd,
                 EveningNauticalTwilightBegin = dto.EveningNauticalTwilightBegin,
@@ -66,6 +70,8 @@ namespace Contracts
         {
             return new InstantCacheDataContract
             { 
+                Date = dto.Date,
+                CurrentTime = dto.CurrentTime,
                 SunAltitude = dto.SunAltitude,
                 SunDistance = dto.SunDistance,
                 SunAzimuth = dto.SunAzimuth,
@@ -133,6 +139,10 @@ namespace Contracts
         public double SunAzimuth { get; set; }
         [DataMember]
         public TimeSpan DayLength { get; set; }
+        [DataMember]
+        public DateTimeOffset? Sunrise { get; set; }
+        [DataMember]
+        public DateTimeOffset? Sunset { get; set; }
 
         [DataMember]
         public DateTimeOffset? MorningAstronomicalTwilightBegin { get; set; }
@@ -173,6 +183,10 @@ namespace Contracts
         public double LunarAge { get; set; }
         [DataMember]
         public MoonPhases MoonPhase { get; set; }
+        [DataMember]
+        public DateTimeOffset? Moonrise { get; set; }
+        [DataMember]
+        public DateTimeOffset? Moonset { get; set; }
 
         [DataMember]
         public DateTimeOffset? EveningAstronomicalTwilightBegin { get; set; }
@@ -200,6 +214,11 @@ namespace Contracts
     [DataContract]
     public class InstantCacheDataContract
     {
+        [DataMember]
+        public DateTime Date { get; set; }
+
+        [DataMember]
+        public TimeSpan CurrentTime { get; set; }
         [DataMember]
         public double SunAltitude { get; set; }
         [DataMember]

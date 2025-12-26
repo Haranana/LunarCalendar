@@ -63,7 +63,7 @@ namespace WpfClient.ViewModels
         {
             try
             {
-                Status = "Wczytywanie lokalizacji...";
+                Status = "Loading location data";
                 Location = await _svc.GetLocationDataAsync().ConfigureAwait(true);
 
                 LatText = Location.Latitude.ToString(CultureInfo.InvariantCulture);
@@ -73,33 +73,32 @@ namespace WpfClient.ViewModels
             }
             catch
             {
-                Status = "Nie udało się wczytać lokalizacji.";
+                Status = "Data couldn't be loaded";
             }
         }
 
         private async Task UpdateLocationAsync()
         {
-            // twardo: parsujemy tylko invariant (kropka), bo tak masz w backendzie konsekwentnie
             if (!double.TryParse(LatText, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat) ||
                 !double.TryParse(LonText, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon))
             {
-                Status = "Błędne lat/lon (użyj kropki).";
+                Status = "Incorrect coordinates (use dot as a separator!)";
                 return;
             }
 
             try
             {
-                Status = "Aktualizacja lokalizacji...";
+                Status = "Refreshing location data";
                 await _svc.UpdateLocationDataAsync(lat, lon).ConfigureAwait(true);
 
                 await LoadLocationAsync().ConfigureAwait(true);
                 await ForceRefreshAllAsync().ConfigureAwait(true);
 
-                Status = "Zaktualizowano.";
+                Status = "Location data updated";
             }
             catch
             {
-                Status = "Błąd aktualizacji lokalizacji.";
+                Status = "Data couldn't be updated";
             }
         }
 
@@ -107,14 +106,14 @@ namespace WpfClient.ViewModels
         {
             try
             {
-                Status = "Wymuszanie odświeżenia...";
+                Status = "Refreshing...";
                 await _now.RefreshAsync().ConfigureAwait(true);
                 await _week.RefreshAsync().ConfigureAwait(true);
                 Status = "OK";
             }
             catch
             {
-                Status = "Błąd odświeżenia.";
+                Status = "Data couldn't be refreshed";
             }
         }
     }

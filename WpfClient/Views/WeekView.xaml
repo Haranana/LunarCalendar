@@ -49,7 +49,7 @@
                 <TextBlock Margin="0,6,0,0" Text="{Binding SelectedDay.MoonPhase, StringFormat=Faza: {0}}"/>
                 <TextBlock Text="{Binding SelectedDay.MoonIlluminationPercentage, StringFormat=Oświetlenie: {0:N1}%}"/>
                 <TextBlock Text="{Binding SelectedDay.DayLength, StringFormat=Długość dnia: {0}}"/>
-                <TextBlock Text="{Binding SelectedDay.NightLength, StringFormat=Długość nocy: {0}}"/>
+                <TextBlock Text="{Binding SelectedDay.EveningAstronomicalTwilightBegin, StringFormat=test: {0}}"/>
 
                 <TextBlock Margin="0,6,0,0" Opacity="0.7" TextWrapping="Wrap"
                            Text="Tu dołożysz resztę: twilight begin/end, alt/azimuth, itp."/>
