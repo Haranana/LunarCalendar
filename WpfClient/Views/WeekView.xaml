@@ -10,17 +10,39 @@
         </Grid.RowDefinitions>
 
         <!-- NAV -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,6">
-            <Button Width="90" Margin="4,0" Content="Teraz"
-                    Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <Button Width="90" Margin="4,0" Content="Tydzień"
-                    Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <Button Width="90" Margin="4,0" Content="Ustawienia"
-                    Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="0,0,0,4" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Column="0" Style="{StaticResource NavButton}"
+           
+            Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                <Image Source="{StaticResource StarIcon}" Width="24" Height="24"/>
+            </Button>
+
+            <Button Grid.Column="1"  Style="{StaticResource NavButton}"
+            Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                <Image Source="{StaticResource CalendarIcon}" Width="24" Height="24"/>
+            </Button>
+
+            <Button Grid.Column="2"  Style="{StaticResource NavButton}"
+            Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                <Image Source="{StaticResource CogIcon}" Width="24" Height="24"/>
+            </Button>
+
+            <Separator Margin="0,6,0,0" Grid.Row="1" Grid.ColumnSpan="3"/>
+        </Grid>
+
 
         <!-- Days selector -->
-        <Border Grid.Row="1" Padding="6" CornerRadius="8" BorderThickness="1" BorderBrush="Gray" Margin="0,0,0,6">
+        <Border Grid.Row="1" HorizontalAlignment="Center" Padding="6" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource ColorWeak}" Margin="0,0,0,6">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <ItemsControl ItemsSource="{Binding Days}">
                     <ItemsControl.ItemsPanel>
@@ -30,10 +52,14 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Margin="4,0" Padding="8,4"
-                                    Content="{Binding LocalDate, StringFormat={}{0:dd.MM}}"
+                            <Button Margin="4,0" Height="50" Width="40" Background="{StaticResource ColorExtreme}" Foreground="White" 
                                     Command="{Binding DataContext.SelectDayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"/>
+                                    CommandParameter="{Binding}">
+                                <Grid >
+                                    <TextBlock Text="{Binding LocalDate, StringFormat={}{0:dd.MM}}"/>
+                                </Grid>
+                                
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -41,25 +67,246 @@
         </Border>
 
         <!-- Selected day details -->
-        <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="Gray">
-            <StackPanel>
-                <TextBlock FontSize="14" FontWeight="Bold"
-                           Text="{Binding SelectedDay.LocalDate, StringFormat=Dzień: {0:yyyy-MM-dd}}"/>
+        <Border Grid.Row="2" Padding="8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Margin="0,6,0,0" Text="{Binding SelectedDay.MoonPhase, StringFormat=Faza: {0}}"/>
-                <TextBlock Text="{Binding SelectedDay.MoonIlluminationPercentage, StringFormat=Oświetlenie: {0:N1}%}"/>
-                <TextBlock Text="{Binding SelectedDay.DayLength, StringFormat=Długość dnia: {0}}"/>
-                <TextBlock Text="{Binding SelectedDay.EveningAstronomicalTwilightBegin, StringFormat=test: {0}}"/>
 
-                <TextBlock Margin="0,6,0,0" Opacity="0.7" TextWrapping="Wrap"
-                           Text="Tu dołożysz resztę: twilight begin/end, alt/azimuth, itp."/>
-            </StackPanel>
+                <!-- main screen -->
+                <Border Grid.Row="0" Padding="2" CornerRadius="8" BorderThickness="1" Background="{StaticResource ColorExtreme}" BorderBrush="{StaticResource ColorWeak}" Margin="0,0,0,6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+
+
+                         
+                        <!-- Left column - moon info -->
+                        <Grid Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Image Margin="12,0,0,0" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right" Source="{StaticResource FallingMoonIcon}" Width="24" Height="24"/>
+                            <Image Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" Source="{StaticResource ArrowUpIcon}" Width="24" Height="24"/>
+                            <TextBlock Grid.Column="2" Grid.Row="0" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" TextAlignment="Center" Text="{Binding Moonrise}"></TextBlock>
+
+                            <Image Margin="12,0,0,0" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Source="{StaticResource FallingMoonIcon}" Width="24" Height="24"/>
+                            <Image Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Source="{StaticResource ArrowDownIcon}" Width="24" Height="24"/>
+                            <TextBlock Grid.Column="2" Grid.Row="1" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="2" TextAlignment="Center" Text="{Binding Moonset}"></TextBlock>
+                        </Grid>
+
+                        <!-- Middle column - time and moon phase -->
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="3*"/>
+
+                            </Grid.RowDefinitions>
+
+
+                            <TextBlock Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold"
+                           Text="{Binding SelectedDay.LocalDate, StringFormat={}{0:dd-MM-yyyy}}" />
+                            <Image Margin="0,4,0,4" HorizontalAlignment="Center" Grid.Row="1" Source="{Binding CurrentMoonPhaseImage}" />
+                           
+                        </Grid>
+
+                        <!-- Right column - sun info -->
+                        <Grid Grid.Column="2" HorizontalAlignment="Right" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" FontSize="14" VerticalAlignment="Center" Text="{Binding Sunrise}"></TextBlock>
+                            <Image Margin="6,0,0,0" Grid.Column="1" Grid.Row="0" Source="{StaticResource FallingSunIcon}" Width="24" Height="24"/>
+                            <Image Margin="0,0,12,0"  Grid.Column="2" Grid.Row="0"  Source="{StaticResource ArrowUpIcon}" Width="24" Height="24"/>
+
+                            <TextBlock Grid.Column="0" Grid.Row="1" FontSize="14" VerticalAlignment="Center" Text="{Binding Sunset}"></TextBlock>
+                            <Image Margin="6,0,0,0" Grid.Column="1" Grid.Row="1"  Source="{StaticResource FallingSunIcon}" Width="24" Height="24"/>
+                            <Image Margin="0,0,12,0" Grid.Column="2" Grid.Row="1"  Source="{StaticResource ArrowDownIcon}" Width="24" Height="24"/>
+                            
+                        </Grid>
+                        
+                    </Grid>
+                </Border>
+
+                <!-- Essentials -->
+                <Border Grid.Row="1" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+
+
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Row="0" Grid.ColumnSpan="5"  Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                            <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Essential Data"></TextBlock>
+                            <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                        </Grid>
+
+                        <TextBlock  HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" Text="Day Length:"/>
+                        <TextBlock  HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" Text="Night Length:"/>
+
+                        <TextBlock HorizontalAlignment="Center" Grid.Row="1" Grid.Column="3" Text="{Binding DayLength}"/>
+                        <TextBlock HorizontalAlignment="Center" Grid.Row="2" Grid.Column="3" Text="{Binding NightLength}"/>
+                        <TextBlock HorizontalAlignment="Left" Grid.Row="4" Grid.Column="1" Text="Phase:"/>
+
+                        <TextBlock HorizontalAlignment="Center" Grid.Row="4" Grid.Column="3" Text="{Binding MoonPhaseName}"/>
+
+                    </Grid>
+                </Border>
+                
+                <!-- Twilights -->
+                <Border Grid.Row="2" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="4*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Row="0" Grid.ColumnSpan="3"  Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                            <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Twilights"></TextBlock>
+                            <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                        </Grid>
+
+                        <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" Text="Morning"/>
+                        <TextBlock FontSize="14" Margin="0,0,20,0" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="2" Text="Evening"/>
+
+                        <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="2" Grid.Column="0" Text="Civil"/>
+                        <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="3" Grid.Column="0" Text="Nautical"/>
+                        <TextBlock FontSize="14" Margin="20,0,0,0" Grid.Row="4" Grid.Column="0" Text="Astronomical"/>
+
+                        <TextBlock FontSize="14"   HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" Text="{Binding MorningCivilTwilight}"/>
+                        <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="3" Grid.Column="1" Text="{Binding MorningNauticalTwilight}"/>
+                        <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="1" Text="{Binding MorningAstronomicalTwilight}"/>
+
+                        <TextBlock FontSize="14"  Margin="0,0,20,0" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="2" Text="{Binding EveningCivilTwilight}"/>
+                        <TextBlock FontSize="14"  Margin="0,0,20,0" HorizontalAlignment="Center" Grid.Row="3" Grid.Column="2" Text="{Binding EveningNauticalTwilight}"/>
+                        <TextBlock FontSize="14" Margin="0,0,20,0" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="2" Text="{Binding EveningAstronomicalTwilight}"/>
+
+                    </Grid>
+                </Border>
+
+                <!-- photography -->
+                <Border Grid.Row="3" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="4*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Row="0" Grid.ColumnSpan="3"  Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                            <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Photography"></TextBlock>
+                            <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                        </Grid>
+
+                        <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" Text="Morning"/>
+                        <TextBlock FontSize="14" Margin="0,0,20,0" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="2" Text="Evening"/>
+
+                        <TextBlock FontSize="14" Margin="10,0,0,0" Grid.Row="2" Grid.Column="0" Text="Blue Hours"/>
+                        <TextBlock FontSize="14" Margin="10,0,0,0" Grid.Row="3" Grid.Column="0" Text="Golden Hours"/>
+                   
+
+                        <TextBlock FontSize="14"   HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" Text="{Binding MorningBlueHour}"/>
+                        <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="3" Grid.Column="1" Text="{Binding EveningBlueHour}"/>
+             
+
+                        <TextBlock FontSize="14"  Margin="0,0,10,0" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="2" Text="{Binding MorningGoldenHour}"/>
+                        <TextBlock FontSize="14"  Margin="0,0,10,0" HorizontalAlignment="Center" Grid.Row="3" Grid.Column="2" Text="{Binding EveningGoldenHour}"/>
+
+                    </Grid>
+                </Border>
+            </Grid>
+            
         </Border>
 
+        
+
         <!-- Refresh -->
-        <DockPanel Grid.Row="3" Margin="0,6,0,0">
-            <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{Binding Status}" Opacity="0.8"/>
-            <Button DockPanel.Dock="Right" Width="120" Content="Odśwież tydzień" Command="{Binding RefreshCommand}"/>
-        </DockPanel>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" FontSize="8" FontWeight="Bold" VerticalAlignment="Center"
+        Text="{Binding Status}"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Width="Auto" Style="{StaticResource NavButton}" Command="{Binding RefreshCommand}">
+                    <Image  Grid.Column="0"  HorizontalAlignment="Right" Source="{StaticResource RefreshIcon}" Width="24" Height="24"/>
+                </Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

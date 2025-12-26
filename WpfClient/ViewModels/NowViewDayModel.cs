@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WpfClient.MVVM;
@@ -126,6 +127,7 @@ namespace WpfClient.ViewModels
         {
             serviceClient = svc;
             RefreshCommand = new AsyncRelayCommand(RefreshAsync);
+            Application.Current.Dispatcher.InvokeAsync(async () => await RefreshAsync());
         }
 
         public async Task RefreshAsync()
@@ -164,6 +166,8 @@ namespace WpfClient.ViewModels
 
             DayLength = dailyData.DayLength.ToString(@"hh\:mm");
             NightLength = dailyData.NightLength.ToString(@"hh\:mm");
+
+
         }
 
         private DailyCacheDataContract GetTodaysDataFromWeekly(WeeklyCacheDataContract weeklyCache)

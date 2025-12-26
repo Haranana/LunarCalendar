@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -119,6 +120,7 @@ namespace WpfClient.ViewModels
         {
             serviceClient = svc;
             RefreshCommand = new AsyncRelayCommand(RefreshAsync);
+            Application.Current.Dispatcher.InvokeAsync(async () => await RefreshAsync());
         }
 
         public async Task RefreshAsync()
