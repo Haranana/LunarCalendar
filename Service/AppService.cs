@@ -49,7 +49,7 @@ namespace Service
             {
                 cacheStorage.SetLocation(new LocationCacheData
                 {
-                    LastUpdateTime = DateTimeOffset.Now,
+                    LastUpdateTime = DateTimeOffset.UtcNow,
                     Latitude = lat,
                     Longitude = lon,
                     UserTimeZoneInfo = tz,
@@ -73,8 +73,16 @@ namespace Service
                 );
 
                 AstronomyResponseDto astronomyDto = await ipGeoClient.GetAstronomyAsync(loc.Latitude, loc.Longitude, ianaId);
+                cacheStorage.SetLocation(new LocationCacheData
+                {
+                    LastUpdateTime = DateTimeOffset.UtcNow,
+                    IanaTimeZoneId = loc.IanaTimeZoneId,
+                    Latitude = loc.Latitude,
+                    Longitude = loc.Longitude,
+                    City = astronomyDto.Location.City,
+                    CountryName = astronomyDto.Location.CountryName,
+                });
 
-                
                 cacheStorage.RefreshInstantData(astronomyDto.Astronomy);
                 cacheStorage.RefreshWeeklyData(timeSeriesDto);
             }
@@ -114,6 +122,18 @@ namespace Service
                     loc.Longitude,
                     loc.IanaTimeZoneId
                 );
+
+                /*
+                loggingService.WriteInfo("updating local data to: " + dto.Location.City + "  in: " + dto.Location.CountryName);
+                cacheStorage.SetLocation(new LocationCacheData
+                {
+                    LastUpdateTime = DateTimeOffset.UtcNow,
+                    IanaTimeZoneId = loc.IanaTimeZoneId,
+                    Latitude = loc.Latitude,
+                    Longitude = loc.Longitude,
+                    City = dto.Location.City,
+                    CountryName = dto.Location.CountryName,
+                });*/
 
                 cacheStorage.RefreshInstantData(dto.Astronomy);
             }
@@ -159,6 +179,17 @@ namespace Service
                     DateTimeOffset.Now.AddDays(5),
                     loc.IanaTimeZoneId
                 );
+
+                /*
+                cacheStorage.SetLocation(new LocationCacheData
+                {
+                    LastUpdateTime = DateTimeOffset.UtcNow,
+                    IanaTimeZoneId = loc.IanaTimeZoneId,
+                    Latitude = loc.Latitude,
+                    Longitude = loc.Longitude,
+                    City = dto.Location.City,
+                    CountryName = dto.Location.CountryName,
+                });*/
                 cacheStorage.RefreshWeeklyData(dto);
             }
             catch(Exception ex) {

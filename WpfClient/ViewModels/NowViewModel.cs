@@ -169,7 +169,7 @@ namespace WpfClient.ViewModels
                     break;
                 case MoonPhases.WaxingGibbous:
                     MoonPhaseName = "Waxing Gibbous";
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/NewMoon.png"));
+                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/WaxingGibbous.png"));
                     break;
                 case MoonPhases.WaningGibbous:
                     MoonPhaseName = "Waning Gibbous";

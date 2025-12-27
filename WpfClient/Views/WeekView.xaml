@@ -52,7 +52,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Margin="4,0" Height="50" Width="40" Background="{StaticResource ColorExtreme}" Foreground="White" 
+                            <Button Style="{StaticResource BodyBytton}"   Margin="4,0" Height="50" Width="40" Background="{StaticResource ColorExtreme}" Foreground="White" 
                                     Command="{Binding DataContext.SelectDayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}">
                                 <Grid >
@@ -183,14 +183,14 @@
                             <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
                         </Grid>
 
-                        <TextBlock  HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" Text="Day Length:"/>
-                        <TextBlock  HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" Text="Night Length:"/>
+                        <TextBlock FontSize="14"  HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" Text="Day Length:"/>
+                        <TextBlock FontSize="14"  HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" Text="Night Length:"/>
 
-                        <TextBlock HorizontalAlignment="Center" Grid.Row="1" Grid.Column="3" Text="{Binding DayLength}"/>
-                        <TextBlock HorizontalAlignment="Center" Grid.Row="2" Grid.Column="3" Text="{Binding NightLength}"/>
-                        <TextBlock HorizontalAlignment="Left" Grid.Row="4" Grid.Column="1" Text="Phase:"/>
+                        <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="3" Text="{Binding DayLength}"/>
+                        <TextBlock FontSize="14"  HorizontalAlignment="Center" Grid.Row="2" Grid.Column="3" Text="{Binding NightLength}"/>
+                        <TextBlock FontSize="14" HorizontalAlignment="Left" Grid.Row="4" Grid.Column="1" Text="Phase:"/>
 
-                        <TextBlock HorizontalAlignment="Center" Grid.Row="4" Grid.Column="3" Text="{Binding MoonPhaseName}"/>
+                        <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="3" Text="{Binding MoonPhaseName}"/>
 
                     </Grid>
                 </Border>

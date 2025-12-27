@@ -12,15 +12,15 @@ namespace WpfClient.ViewModels
 {
     public class SettingsViewModel : ViewModelBase
     {
-        private readonly AstronomyServiceClient _svc;
-        private readonly NowViewModel _now;
-        private readonly WeekViewModel _week;
+        private readonly AstronomyServiceClient astronomyServiceClient;
+        private readonly NowViewModel nowViewModel;
+        private readonly WeekViewModel weekViewModel;
 
-        private LocationCacheDataContract _location;
+        private LocationCacheDataContract locationData;
         public LocationCacheDataContract Location
         {
-            get => _location;
-            set => Set(ref _location, value);
+            get => locationData;
+            set => Set(ref locationData, value);
         }
 
         private string _latText;
@@ -50,9 +50,9 @@ namespace WpfClient.ViewModels
 
         public SettingsViewModel(AstronomyServiceClient svc, NowViewModel now, WeekViewModel week)
         {
-            _svc = svc;
-            _now = now;
-            _week = week;
+            astronomyServiceClient = svc;
+            nowViewModel = now;
+            weekViewModel = week;
 
             LoadLocationCommand = new AsyncRelayCommand(LoadLocationAsync);
             UpdateLocationCommand = new AsyncRelayCommand(UpdateLocationAsync);
@@ -63,17 +63,17 @@ namespace WpfClient.ViewModels
         {
             try
             {
-                Status = "Loading location data";
-                Location = await _svc.GetLocationDataAsync().ConfigureAwait(true);
+                Status = "Status: Loading location data";
+                Location = await astronomyServiceClient.GetLocationDataAsync().ConfigureAwait(true);
 
                 LatText = Location.Latitude.ToString(CultureInfo.InvariantCulture);
                 LonText = Location.Longitude.ToString(CultureInfo.InvariantCulture);
 
-                Status = "OK";
+                Status = "Status: OK";
             }
             catch
             {
-                Status = "Data couldn't be loaded";
+                Status = "Status: Data couldn't be loaded";
             }
         }
 
@@ -82,23 +82,24 @@ namespace WpfClient.ViewModels
             if (!double.TryParse(LatText, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat) ||
                 !double.TryParse(LonText, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon))
             {
-                Status = "Incorrect coordinates (use dot as a separator!)";
+                Status = "Status: Incorrect coordinates (use dot as a separator!)";
                 return;
             }
 
             try
             {
-                Status = "Refreshing location data";
-                await _svc.UpdateLocationDataAsync(lat, lon).ConfigureAwait(true);
+                Status = "Status: Refreshing location data";
+                await astronomyServiceClient.UpdateLocationDataAsync(lat, lon).ConfigureAwait(true);
 
-                await LoadLocationAsync().ConfigureAwait(true);
+                
                 await ForceRefreshAllAsync().ConfigureAwait(true);
+                await LoadLocationAsync().ConfigureAwait(true);
 
-                Status = "Location data updated";
+                Status = "Status: Location data updated";
             }
             catch
             {
-                Status = "Data couldn't be updated";
+                Status = "Status: Data couldn't be updated";
             }
         }
 
@@ -106,15 +107,17 @@ namespace WpfClient.ViewModels
         {
             try
             {
-                Status = "Refreshing...";
-                await _now.RefreshAsync().ConfigureAwait(true);
-                await _week.RefreshAsync().ConfigureAwait(true);
-                Status = "OK";
+                Status = "Status: Refreshing...";
+                await nowViewModel.RefreshAsync().ConfigureAwait(true);
+                await weekViewModel.RefreshAsync().ConfigureAwait(true);
+                await LoadLocationAsync();
+                Status = "Status: OK";
             }
             catch
             {
-                Status = "Data couldn't be refreshed";
+                Status = "Status: Data couldn't be refreshed";
             }
+
         }
     }
 }

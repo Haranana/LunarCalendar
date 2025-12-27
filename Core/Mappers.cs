@@ -62,12 +62,14 @@ namespace Core
             if (userTimeZone == null) throw new ArgumentNullException("User time zone is null");
 
             var list = dto.Where(a => a != null).Select(a => MapDaily(a, userTimeZone)).ToList();
-
-            return new WeeklyCacheData
+            var newWeekly = new WeeklyCacheData
             {
                 LastUpdateTime = updateTime,
                 DailyCacheDatas = list
             };
+
+
+            return newWeekly;
         }
 
         private static DailyCacheData MapDaily(AstronomyDto a, TimeZoneInfo tz)
@@ -124,7 +126,7 @@ namespace Core
             };
         }
 
-        /* NOT in use
+
         public static LocationCacheData MapToLocationCacheData(LocationDto dto, DateTimeOffset updateTime, TimeZoneInfo userTimeZoneInfo, string ianaTimeZoneId)
         {
             return new LocationCacheData
@@ -137,7 +139,7 @@ namespace Core
                 CountryName = dto.CountryName,
                 IanaTimeZoneId = ianaTimeZoneId,
             };
-        }*/
+        }
 
         private static DateTime ParseDate(string yyyyMmDd)
         {

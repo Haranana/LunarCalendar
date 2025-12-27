@@ -9,61 +9,141 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- NAV -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,6">
-            <Button Width="90" Margin="4,0" Content="Teraz"
-                    Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <Button Width="90" Margin="4,0" Content="Tydzień"
-                    Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <Button Width="90" Margin="4,0" Content="Ustawienia"
-                    Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="0,0,0,4" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Column="0" Style="{StaticResource NavButton}"
+       
+                Command="{Binding DataContext.GoNowCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <Image Source="{StaticResource StarIcon}" Width="24" Height="24"/>
+                            </Button>
+
+                            <Button Grid.Column="1"  Style="{StaticResource NavButton}"
+                Command="{Binding DataContext.GoWeekCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <Image Source="{StaticResource CalendarIcon}" Width="24" Height="24"/>
+                            </Button>
+
+                            <Button Grid.Column="2"  Style="{StaticResource NavButton}"
+                Command="{Binding DataContext.GoSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                                <Image Source="{StaticResource CogIcon}" Width="24" Height="24"/>
+                            </Button>
+
+            <Separator Margin="0,6,0,0" Grid.Row="1" Grid.ColumnSpan="3"/>
+        </Grid>
 
         <!-- Location info -->
-        <Border Grid.Row="1" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="Gray" Margin="0,0,0,6">
-            <StackPanel>
-                <TextBlock FontWeight="Bold" Text="Aktualna lokalizacja:"/>
-                <TextBlock Text="{Binding Location.City, StringFormat=Miasto: {0}}"/>
-                <TextBlock Text="{Binding Location.CountryName, StringFormat=Kraj: {0}}"/>
-                <TextBlock Text="{Binding Location.IanaTimeZoneId, StringFormat=Strefa: {0}}"/>
-            </StackPanel>
-        </Border>
-
-        <!-- Inputs -->
-        <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="Gray">
+        <Border Grid.Row="1" Margin="0,0,0,8">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+
+
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="Zmień lokalizację (lat/lon):" Margin="0,0,0,6"/>
+                <Grid Grid.Row="0" Grid.ColumnSpan="5"  Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Lat:"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LatText, UpdateSourceTrigger=PropertyChanged}" Margin="6,2"/>
+                    <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                    <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Current Location"></TextBlock>
+                    <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                </Grid>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Text="Lon:"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding LonText, UpdateSourceTrigger=PropertyChanged}" Margin="6,2"/>
+                <TextBlock FontSize="14"  HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" Text="Country:"/>
+                <TextBlock FontSize="14"  HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" Text="City:"/>
+                <TextBlock FontSize="14" HorizontalAlignment="Left" Grid.Row="4" Grid.Column="1" Text="Timezone:"/>
 
-                <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                    <Button Width="150" Margin="4,0" Content="Wczytaj lokalizację" Command="{Binding LoadLocationCommand}"/>
-                    <Button Width="150" Margin="4,0" Content="Zmień lokalizację" Command="{Binding UpdateLocationCommand}"/>
-                </StackPanel>
+                <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="3" Text="{Binding Location.CountryName}"/>
+                <TextBlock FontSize="14"  HorizontalAlignment="Center" Grid.Row="2" Grid.Column="3" Text="{Binding Location.City}"/>
+                <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="3" Text="{Binding Location.IanaTimeZoneId}"/>
 
-                <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Opacity="0.8" Text="{Binding Status}" Margin="0,8,0,0"/>
             </Grid>
         </Border>
 
-        <!-- Force refresh -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
-            <Button Width="170" Content="Wymuś odświeżenie danych" Command="{Binding ForceRefreshAllCommand}"/>
-        </StackPanel>
+        <!-- Change location -->
+        <Border Grid.Row="2" Padding="8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Row="0" Grid.ColumnSpan="5"  Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Separator Grid.Column="0" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                    <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="16" FontWeight="Bold" Text="Change Location"></TextBlock>
+                    <Separator Grid.Column="2" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                </Grid>
+
+                
+
+                <TextBlock FontSize="14" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Text="Latitude:"/>
+                <TextBox FontSize="14" Width="80" HorizontalAlignment="Center"  Padding="6,0,0,0" Foreground="White" Background="{StaticResource ColorExtreme}" Grid.Row="1" Grid.Column="3" Text="{Binding LatText, UpdateSourceTrigger=PropertyChanged}" Margin="6,2"/>
+
+                <TextBlock FontSize="14" HorizontalAlignment="Center"  Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Text="Longitude:"/>
+                <TextBox FontSize="14" Width="80" HorizontalAlignment="Center"  Padding="6,0,0,0" Foreground="White" Background="{StaticResource ColorExtreme}" Grid.Row="2" Grid.Column="3" Text="{Binding LonText, UpdateSourceTrigger=PropertyChanged}" Margin="6,2"/>
+
+                <StackPanel Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" Margin="0,8,0,0">
+
+                    <Button Style="{StaticResource BodyBytton}" Width="60" Height="40"  Content="Update" Command="{Binding UpdateLocationCommand}"/>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" FontSize="8" FontWeight="Bold" VerticalAlignment="Center"
+                Text="{Binding Status}"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Width="Auto" Style="{StaticResource NavButton}" Command="{Binding ForceRefreshAllCommand}">
+                    <Image  Grid.Column="0"  HorizontalAlignment="Right" Source="{StaticResource RefreshIcon}" Width="24" Height="24"/>
+                </Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
