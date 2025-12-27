@@ -10,11 +10,15 @@ namespace Contracts
 {
     public static class ContractMapper
     {
-        public static WeeklyCacheDataContract WeeklyCacheToContract(WeeklyCacheData dto)
+
+        private static DateTimeOffset? ToTz(DateTimeOffset? utc, TimeZoneInfo tz) => utc.HasValue ? TimeZoneInfo.ConvertTime(utc.Value, tz) : utc;
+
+        private static DateTimeOffset ToTz(DateTimeOffset utc, TimeZoneInfo tz) => TimeZoneInfo.ConvertTime(utc, tz);
+        public static WeeklyCacheDataContract WeeklyCacheToContract(WeeklyCacheData dto, TimeZoneInfo tz)
         {
             var newDaily = new List<DailyCacheDataContract>();
             foreach(var e in dto.DailyCacheDatas){
-                newDaily.Add(DailyCacheToContract(e));
+                newDaily.Add(DailyCacheToContract(e, tz));
             }
             return new WeeklyCacheDataContract
             {
@@ -22,7 +26,7 @@ namespace Contracts
             };
         }
 
-        public static DailyCacheDataContract DailyCacheToContract(DailyCacheData dto)
+        public static DailyCacheDataContract DailyCacheToContract(DailyCacheData dto, TimeZoneInfo tz)
         {
             return new DailyCacheDataContract
             {
@@ -31,18 +35,21 @@ namespace Contracts
                 SunDistance = dto.SunDistance,
                 SunAzimuth = dto.SunAzimuth,
                 DayLength = dto.DayLength,
-                Sunrise = dto.Sunrise,
-                Sunset = dto.Sunset,
-                MorningAstronomicalTwilightBegin = dto.MorningAstronomicalTwilightBegin,
-                MorningAstronomicalTwilightEnd = dto.MorningAstronomicalTwilightEnd,
-                MorningNauticalTwilightBegin = dto.MorningNauticalTwilightBegin,
-                MorningNauticalTwilightEnd = dto.MorningNauticalTwilightEnd,
-                MorningCivilTwilightBegin = dto.MorningCivilTwilightBegin,
-                MorningCivilTwilightEnd = dto.MorningCivilTwilightEnd,
-                MorningBlueHourBegin = dto.MorningBlueHourBegin,
-                MorningBlueHourEnd = dto.MorningBlueHourEnd,
-                MorningGoldenHourBegin = dto.MorningGoldenHourBegin,
-                MorningGoldenHourEnd = dto.MorningGoldenHourEnd,
+
+                Sunrise = ToTz(dto.Sunrise, tz),
+                Sunset = ToTz(dto.Sunset, tz),
+
+                MorningAstronomicalTwilightBegin = ToTz(dto.MorningAstronomicalTwilightBegin, tz),
+                MorningAstronomicalTwilightEnd = ToTz(dto.MorningAstronomicalTwilightEnd, tz),
+                MorningNauticalTwilightBegin = ToTz(dto.MorningNauticalTwilightBegin, tz),
+                MorningNauticalTwilightEnd = ToTz(dto.MorningNauticalTwilightEnd, tz),
+                MorningCivilTwilightBegin = ToTz(dto.MorningCivilTwilightBegin, tz),
+                MorningCivilTwilightEnd = ToTz(dto.MorningCivilTwilightEnd, tz),
+                MorningBlueHourBegin = ToTz(dto.MorningBlueHourBegin, tz),
+                MorningBlueHourEnd = ToTz(dto.MorningBlueHourEnd, tz),
+                MorningGoldenHourBegin = ToTz(dto.MorningGoldenHourBegin, tz),
+                MorningGoldenHourEnd = ToTz(dto.MorningGoldenHourEnd, tz),
+
                 MoonIlluminationPercentage = dto.MoonIlluminationPercentage,
                 MoonAltitude = dto.MoonAltitude,
                 MoonDistance = dto.MoonDistance,
@@ -51,27 +58,30 @@ namespace Contracts
                 NightLength = dto.NightLength,
                 LunarAge = dto.LunarAge,
                 MoonPhase = dto.MoonPhase,
-                Moonrise = dto.Moonrise,
-                Moonset = dto.Moonset,
-                EveningAstronomicalTwilightBegin = dto.EveningAstronomicalTwilightBegin,
-                EveningAstronomicalTwilightEnd = dto.EveningAstronomicalTwilightEnd,
-                EveningNauticalTwilightBegin = dto.EveningNauticalTwilightBegin,
-                EveningNauticalTwilightEnd = dto.EveningNauticalTwilightEnd,
-                EveningCivilTwilightBegin = dto.EveningCivilTwilightBegin,
-                EveningCivilTwilightEnd = dto.EveningCivilTwilightEnd,
-                EveningBlueHourBegin = dto.EveningBlueHourBegin,
-                EveningBlueHourEnd = dto.EveningBlueHourEnd,
-                EveningGoldenHourBegin = dto.EveningGoldenHourBegin,
-                EveningGoldenHourEnd = dto.EveningGoldenHourEnd,
+
+                Moonrise = ToTz(dto.Moonrise, tz),
+                Moonset = ToTz(dto.Moonset, tz),
+
+                EveningAstronomicalTwilightBegin = ToTz(dto.EveningAstronomicalTwilightBegin, tz),
+                EveningAstronomicalTwilightEnd = ToTz(dto.EveningAstronomicalTwilightEnd, tz),
+                EveningNauticalTwilightBegin = ToTz(dto.EveningNauticalTwilightBegin, tz),
+                EveningNauticalTwilightEnd = ToTz(dto.EveningNauticalTwilightEnd, tz),
+                EveningCivilTwilightBegin = ToTz(dto.EveningCivilTwilightBegin, tz),
+                EveningCivilTwilightEnd = ToTz(dto.EveningCivilTwilightEnd, tz),
+                EveningBlueHourBegin = ToTz(dto.EveningBlueHourBegin, tz),
+                EveningBlueHourEnd = ToTz(dto.EveningBlueHourEnd, tz),
+                EveningGoldenHourBegin = ToTz(dto.EveningGoldenHourBegin, tz),
+                EveningGoldenHourEnd = ToTz(dto.EveningGoldenHourEnd, tz),
             };
         }
 
-        public static InstantCacheDataContract InstantCacheToContract(InstantCacheData dto)
+        public static InstantCacheDataContract InstantCacheToContract(InstantCacheData dto, TimeZoneInfo tz)
         {
             return new InstantCacheDataContract
             { 
                 Date = dto.Date,
                 CurrentTime = dto.CurrentTime,
+
                 SunAltitude = dto.SunAltitude,
                 SunDistance = dto.SunDistance,
                 SunAzimuth = dto.SunAzimuth,
@@ -82,12 +92,13 @@ namespace Contracts
                 MoonParallacticAngle = dto.MoonParallacticAngle,
                 LunarAge = dto.LunarAge,
                 MoonPhase = dto.MoonPhase,
-                NextMoonPhases = dto.NextMoonPhases.Select(e=>new MoonPhaseTimeContract {Phase = e.Phase, TimeUtc = e.TimeUtc }).ToList(),                
+                NextMoonPhases = dto.NextMoonPhases.Select(e=>new MoonPhaseTimeContract {Phase = e.Phase, TimeUtc = ToTz( e.TimeUtc, tz )}).ToList(),                
             };
         }
 
         public static LocationCacheDataContract LocationCacheToContract(LocationCacheData dto)
         {
+
             return new LocationCacheDataContract
             {
                 Latitude = dto.Latitude,

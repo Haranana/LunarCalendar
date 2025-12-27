@@ -102,7 +102,7 @@ namespace Service
 
             if (cacheStorage.IsInstantFresh(TimeSpan.FromMinutes(15)))
             {
-                return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData);
+                return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
             }
 
 
@@ -111,7 +111,7 @@ namespace Service
             {
                 if (cacheStorage.IsInstantFresh(TimeSpan.FromMinutes(15)))
                 {
-                    return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData);
+                    return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
 
                 }
                 loggingService.WriteInfo("requesting instant data refresh");
@@ -141,7 +141,7 @@ namespace Service
             {
                 loggingService.WriteError("Refreshing instant data failed", ex);
                 if (cacheStorage.InstantCacheData != null)
-                    return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData);
+                    return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
                 throw;
             }
             finally
@@ -149,7 +149,7 @@ namespace Service
                 refreshGate.Release();
             }
 
-            return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData);
+            return ContractMapper.InstantCacheToContract(cacheStorage.InstantCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
         }
 
 
@@ -157,7 +157,7 @@ namespace Service
         {
             if (cacheStorage.IsWeeklyFresh())
             {             
-                return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
+                return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
             }
 
 
@@ -166,7 +166,7 @@ namespace Service
             {
                 if (cacheStorage.IsWeeklyFresh())
                 {
-                    return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
+                    return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
                 }
                 loggingService.WriteInfo("requesting weekly data refresh");
 
@@ -196,7 +196,7 @@ namespace Service
             
                 loggingService.WriteError("Refreshing weekly data failed", ex);
                 if (cacheStorage.InstantCacheData != null)
-                    return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
+                    return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
                 throw;
             }
             finally
@@ -204,7 +204,7 @@ namespace Service
                 refreshGate.Release();
             }
 
-            return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData);
+            return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
         }
 
     }
