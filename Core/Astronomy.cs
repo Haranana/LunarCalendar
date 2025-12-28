@@ -61,7 +61,7 @@ namespace Core
     /// </remarks>
     public static class Astronomy
     {               
-        private const Double SynodicMonth = 29.530588; //in days
+        public const Double SynodicMonth = 29.530588; //in days
         private static readonly DateTimeOffset NewMoonRef = new DateTimeOffset(2000, 1, 6, 18, 13, 0 , TimeSpan.Zero);
 
         /// <summary>

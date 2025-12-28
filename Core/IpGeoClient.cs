@@ -12,18 +12,24 @@ using System.Threading.Tasks;
 
 namespace Core
 {
+    public interface IIpGeoClient
+    {
+        Task<AstronomyTimeSeriesDto> GetAstronomyRangeAsync(double lat, double lon, DateTimeOffset beg, DateTimeOffset end, string ianaId);
+        Task<AstronomyResponseDto> GetAstronomyAsync(double lat, double lon, string ianaId, DateTime? date = null);
+    }
+
     /// <summary>
     /// Dedicated class for communication with IpGeolocation API
     /// </summary>
-    public class IpGeoClient
+    public class IpGeoClient : IIpGeoClient
     {
 
         private readonly HttpClient HttpClient;
         private readonly string ApiKey;
         private readonly string ApiUrl;
-        private LoggingService loggingService;
+        private readonly ILogger loggingService;
 
-        public IpGeoClient(HttpClient httpClient , LoggingService loggingService)
+        public IpGeoClient(HttpClient httpClient , ILogger loggingService)
         {
             HttpClient = httpClient ?? throw new ArgumentNullException("HttpClient is null");
             this.loggingService = loggingService;

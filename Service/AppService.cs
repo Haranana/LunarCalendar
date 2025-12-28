@@ -21,11 +21,11 @@ namespace Service
     {
 
         private readonly CacheStorage cacheStorage;
-        private readonly IpGeoClient ipGeoClient;
-        private LoggingService loggingService;
+        private readonly IIpGeoClient ipGeoClient;
+        private ILogger loggingService;
         private readonly SemaphoreSlim refreshGate = new SemaphoreSlim(1, 1);
 
-        public AstronomyService(CacheStorage cacheStorage, IpGeoClient ipGeoClient, LoggingService loggingService)
+        public AstronomyService(CacheStorage cacheStorage, IIpGeoClient ipGeoClient, ILogger loggingService)
         {
             this.cacheStorage = cacheStorage;
             this.ipGeoClient = ipGeoClient;
@@ -199,7 +199,7 @@ namespace Service
 
             using (var host = new ServiceHost(svc))
             {
-                host.Open(); // <-- TO jest moment “serwer działa”
+                host.Open(); 
 
                 
                 Console.WriteLine("WCF host is running. Press ENTER to stop.");
@@ -213,10 +213,10 @@ namespace Service
     public partial class AppService : ServiceBase
     {
         private CacheStorage cacheStorage;
-        private IpGeoClient ipGeoClient;
+        private IIpGeoClient ipGeoClient;
         private AstronomyService astronomyService;
         private ServiceHost serviceHost;
-        private LoggingService loggingService;
+        private ILogger loggingService;
        
         public AppService()
         {
@@ -228,7 +228,7 @@ namespace Service
             loggingService = new LoggingService("AstronomyService" , "Application");            
             cacheStorage = new CacheStorage();
 
-            ipGeoClient = new IpGeoClient(new System.Net.Http.HttpClient(), loggingService);
+            ipGeoClient = new IpGeoClient(new HttpClient(), loggingService);
             astronomyService = new AstronomyService(cacheStorage, ipGeoClient, loggingService);
 
             serviceHost = new ServiceHost(astronomyService);

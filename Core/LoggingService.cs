@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace Core
 {
+
+    public interface ILogger
+    {
+        void WriteInfo(string message);
+        void WriteWarning(string message);
+        void WriteError(string message, Exception ex = null);
+    }
+
     /// <summary>
     /// Writes application logs to Windows Event Log
     /// </summary>
@@ -14,7 +22,7 @@ namespace Core
     /// This logger intentionally do not throws any errors related to event log access such as (missing permissions, missing source, invalid log name etc.) .
     /// The written entry is trimmed to 10 000 characters.
     /// </remarks>
-    public class LoggingService : IDisposable
+    public class LoggingService : IDisposable , ILogger
     {
         private readonly string source;
         private readonly string logName;
