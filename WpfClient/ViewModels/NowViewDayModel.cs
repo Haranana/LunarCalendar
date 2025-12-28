@@ -16,9 +16,6 @@ namespace WpfClient.ViewModels
     public class NowViewDayModel : ViewModelBase
     {
         private readonly AstronomyServiceClient serviceClient;
-
-
-
         private string currentDateAndTime;
         public string CurrentDateAndTime
         {
@@ -169,7 +166,6 @@ namespace WpfClient.ViewModels
 
 
         }
-
         private DailyCacheDataContract GetTodaysDataFromWeekly(WeeklyCacheDataContract weeklyCache)
         {
             return weeklyCache.DailyCacheDatas[1];

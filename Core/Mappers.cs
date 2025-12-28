@@ -7,16 +7,25 @@ using System.Threading.Tasks;
 
 namespace Core
 {
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Security.Policy;
 
+
+
+    /// <summary>
+    /// Maps external API DTOs (string/time formatted) into internal cache models.
+    /// </summary>
     public static class AstronomyMapper
     {
         private static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
+
+
+        /// <summary>
+        /// Maps an instant (current) astronomy response into <see cref="InstantCacheData"/>.
+        /// </summary>
+        /// <param name="a">Source DTO returned by the astronomy API</param>
+        /// <param name="updateTime">Timestamp of data refresh (used as the reference instant for derived values)</param>
+        /// <param name="userTimeZone">User defined timezone used to calculate next phase dates</param>
+        /// <returns>Mapped cache object with parsed values and derived lunar fields</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="a"/> or <paramref name="userTimeZone"/> is null</exception>
 
         public static InstantCacheData MapToInstantCacheData(
             AstronomyDto a,
@@ -53,6 +62,20 @@ namespace Core
             };
         }
 
+        /// <summary>
+        /// Maps a time series / weekly response into <see cref="WeeklyCacheData"/>.
+        /// </summary>
+        /// <param name="dto">Array of daily DTOs returned by the API</param>
+        /// <param name="updateTime">Timestamp of data refresh</param>
+        /// <param name="userTimeZone">Timezone used for parsing local times</param>
+        /// <returns>Weekly cache model containing mapped daily entries</returns>
+        /// <exception cref="ArgumentNullException">
+        /// If <paramref name="dto"/> is null or empty, or if <paramref name="userTimeZone"/> is null.
+        /// </exception>
+        /// <remarks>
+        /// Inside conversion of DailyDatas Derived lunar fields are calculated for local noon (12:00) converted to UTC to provide day based values.
+        /// All twilight/sun/moon times are assumed to be local clock times for <paramref name="tz"/>.
+        /// </remarks>
         public static WeeklyCacheData MapToWeeklyCacheData(
             AstronomyDto[] dto,
             DateTimeOffset updateTime,
@@ -71,6 +94,13 @@ namespace Core
 
             return newWeekly;
         }
+
+        /// <summary>
+        /// Maps a single day DTO into <see cref="DailyCacheData"/> using a local date and timezone.
+        /// </summary>
+        /// <param name="a">Single-day DTO from the API.</param>
+        /// <param name="tz">Timezone used to interpret local times like sunrise/sunset.</param>
+        /// <returns>Mapped daily cache object.</returns>
 
         private static DailyCacheData MapDaily(AstronomyDto a, TimeZoneInfo tz)
         {
@@ -126,21 +156,6 @@ namespace Core
             };
         }
 
-
-        public static LocationCacheData MapToLocationCacheData(LocationDto dto, DateTimeOffset updateTime, TimeZoneInfo userTimeZoneInfo, string ianaTimeZoneId)
-        {
-            return new LocationCacheData
-            {
-                LastUpdateTime = updateTime,
-                UserTimeZoneInfo = userTimeZoneInfo,
-                Latitude = Double.Parse(dto.Latitude, CultureInfo.InvariantCulture),
-                Longitude = Double.Parse(dto.Longitude, CultureInfo.InvariantCulture),
-                City = dto.City,
-                CountryName = dto.CountryName,
-                IanaTimeZoneId = ianaTimeZoneId,
-            };
-        }
-
         private static DateTime ParseDate(string yyyyMmDd)
         {
             if (string.IsNullOrWhiteSpace(yyyyMmDd))
@@ -149,7 +164,6 @@ namespace Core
             return DateTime.ParseExact(yyyyMmDd.Trim(), "yyyy-MM-dd", Inv, DateTimeStyles.None);
         }
 
-        //returns DateTimeOffset of given date and hours in utc
         private static DateTimeOffset? ParseLocalTime(DateTime date, string value, TimeZoneInfo tz)
         {
             if (string.IsNullOrWhiteSpace(value))

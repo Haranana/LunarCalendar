@@ -9,20 +9,24 @@ using System.Threading.Tasks;
 namespace Core
 {
     //all Data and times should be stored as UTC, and if needed then converted in UI services or by API client
+    /// <summary>
+    /// Class for storing Astronomy and Location data in order to minimize amount of API requests.
+    /// All Dates and times should be stored in universal time
+    /// </summary>
     public class CacheStorage
     {
+        private const int weeklyCacheExpectedSize = 7;
+
         private WeeklyCacheData weeklyField;
         private InstantCacheData instantField;
         private LocationCacheData locationField = new LocationCacheData();
-
-        public void InvalidateInstant() => SetInstant(null);
-        public void InvalidateWeekly() => SetWeekly(null);
+       
         public WeeklyCacheData WeeklyCacheData => Volatile.Read(ref weeklyField);
         public InstantCacheData InstantCacheData => Volatile.Read(ref instantField);
         public LocationCacheData LocationCacheData => Volatile.Read(ref locationField);
 
         public void SetWeekly(WeeklyCacheData newWeekly)
-            => Interlocked.Exchange(ref weeklyField, newWeekly);
+         => Interlocked.Exchange(ref weeklyField, newWeekly);
 
         public void SetInstant(InstantCacheData newInstant)
             => Interlocked.Exchange(ref instantField, newInstant);
@@ -30,20 +34,46 @@ namespace Core
         public void SetLocation(LocationCacheData newLocation)
             => Interlocked.Exchange(ref locationField, newLocation);
 
-        private const int weeklyCacheExpectedSize = 7;
+        /// <summary>
+        /// Invalidates instant data, which forces services to refresh it before next usage
+        /// </summary>
+        public void InvalidateInstant() => SetInstant(null);
 
+        /// <summary>
+        /// Invalidates instant data, which forces services to refresh it before next usage
+        /// </summary>
+        public void InvalidateWeekly() => SetWeekly(null);
+
+
+        /// <summary>
+        /// Save <see cref="AstronomyTimeSeriesDto"/> object as weekly data
+        /// </summary>
+        /// <param name="dto">object to be stored in cache</param>
+        /// <exception cref="Exception">
+        /// If given parameter is in incorrect format (null or has fields with unexpected length)
         public void RefreshWeeklyData(AstronomyTimeSeriesDto dto)
         {
             if (dto == null || dto.Astronomy == null || dto.Astronomy.Length != weeklyCacheExpectedSize) throw new Exception("Incorrect Astronomy dto data");
             SetWeekly(AstronomyMapper.MapToWeeklyCacheData(dto.Astronomy, DateTimeOffset.UtcNow, LocationCacheData.UserTimeZoneInfo));
         }
 
+        /// <summary>
+        /// Save <see cref="AstronomyDto"/> object as instant data
+        /// </summary>
+        /// <param name="dto">object to be stored in cache</param>
+        /// <exception cref="Exception">
+        /// If given parameter is in incorrect format (null)
         public void RefreshInstantData(AstronomyDto dto)
         {
             if (dto == null ) throw new Exception("Incorrect Astronomy dto data");
             SetInstant(AstronomyMapper.MapToInstantCacheData(dto, DateTimeOffset.UtcNow,  LocationCacheData.UserTimeZoneInfo));
         }
 
+        /// <summary>
+        /// Checks if instant data saved in storage isn't expired or null
+        /// </summary>
+        /// <param name="maxTtl">Interval of time after last update after which data is considered expired</param>
+        /// <returns>False if data is expired, true if it's not</returns>
         public bool IsInstantFresh(TimeSpan maxTtl)
         {
             return InstantCacheData != null
@@ -51,6 +81,10 @@ namespace Core
                 && (DateTimeOffset.UtcNow.Date == InstantCacheData.LastUpdateTime.Date);
         }
 
+        /// <summary>
+        /// Checks if instant data saved in storage isn't expired or null
+        /// </summary>
+        /// <returns>False if data is expired, true if it's not</returns>
         public bool IsWeeklyFresh()
         {
             return (WeeklyCacheData != null) && (DateTimeOffset.UtcNow.Date == WeeklyCacheData.LastUpdateTime.Date);
@@ -58,7 +92,10 @@ namespace Core
 
     }
 
-    //data regarding interval of yesterday, today and +5 days at noon, needs to be updated daily
+    /// <summary>
+    /// Astronomy data regarding interval of several days (week by default).
+    /// Considered to be expired after one day
+    /// </summary>
     public class WeeklyCacheData
     {
         public DateTimeOffset LastUpdateTime {get; set; }
@@ -111,7 +148,9 @@ namespace Core
 
     }
 
-
+    /// <summary>
+    /// Astronomy data regarding current moment.
+    /// </summary>
     public class InstantCacheData
     {
         public DateTimeOffset LastUpdateTime { get; set; }
@@ -138,14 +177,18 @@ namespace Core
 
     }
 
+    /// <summary>
+    /// Stores Moon Phase and time of its next occurence
+    /// </summary>
     public class MoonPhaseTimeDto
     {
         public MoonPhases Phase { get; set; }
         public DateTimeOffset TimeUtc { get; set; }
     }
 
-    //Data regarding location, should be changed only on location change by user or when empty
-    //by default it points to Warsaw
+    /// <summary>
+    /// Stores coordinates and data associated with them
+    /// </summary>
     public class LocationCacheData
     {
         private const double defaultLat = 52.2298;

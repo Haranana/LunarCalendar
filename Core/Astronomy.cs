@@ -21,8 +21,17 @@ namespace Core
         WaningCrescent,
     }
 
+    /// <summary>
+    /// Utility methods for resolving time zones based on geographic coordinates
+    /// </summary>
     public static class TimeZoneUtil
     {
+        /// <summary>
+        /// Resolves the local <see cref="TimeZoneInfo"/> for given coordinates
+        /// </summary>
+        /// <param name="lat">Geographical latitude in degrees (range: -90..90).</param>
+        /// <param name="lon">Geographical longitude in degrees (range: -180..180).</param>
+        /// <returns>Windows time zone converted from the resolved IANA id</returns>
         public static TimeZoneInfo GetTimeZone(double lat, double lon)
         {
 
@@ -33,54 +42,55 @@ namespace Core
             return TZConvert.GetTimeZoneInfo(iana);
         }
 
+        /// <summary>
+        /// Resolves the IANA time zone id for given coordinates
+        /// </summary>
+        /// <param name="lat">Geographical latitude in degrees (range: -90..90).</param>
+        /// <param name="lon">Geographical longitude in degrees (range: -180..180).</param>
+        /// <returns>IANA time zone id (e.g. <c>Europe/Warsaw</c>)</returns>
         public static string GetIanaTimeZoneId(double lat, double lon)
         {
             return TimeZoneLookup.GetTimeZone(lat, lon).Result;
         }
     }
 
-   
-
-    //every method asking for DateTimeOffset expects data in utc
+    /// Astronomy related helper methods with focus on moon phase and lunar age calculations)
+    /// </summary>
+    /// <remarks>
+    /// Every method with <see cref="DateTimeOffset"/> parameter expects the value to be in universal time
+    /// </remarks>
     public static class Astronomy
     {               
-        public const Double SynodicMonth = 29.530588; //in days
-        //public readonly TimeZoneInfo timeZoneInfo;
-        public static readonly DateTimeOffset NewMoonRef = new DateTimeOffset(2000, 1, 6, 18, 13, 0 , TimeSpan.Zero);
+        private const Double SynodicMonth = 29.530588; //in days
+        private static readonly DateTimeOffset NewMoonRef = new DateTimeOffset(2000, 1, 6, 18, 13, 0 , TimeSpan.Zero);
 
-
-        /*
-        public Astronomy(TimeZoneInfo timeZoneInfo)
-        {
-            this.timeZoneInfo = timeZoneInfo;
-        }*/
-
+        /// <summary>
+        /// Calculates synodic age (in days) for a given UTC date and time
+        /// </summary>
+        /// <param name="date">UTC instant</param>
+        /// <returns>Synodic age (in days) in range [0, <see cref="SynodicMonth"/>).</returns>
         public static double GetSynodicAge(DateTimeOffset date)
         {
             return Mod((ToJulianDate(date) - ToJulianDate(NewMoonRef)), SynodicMonth);
         }
 
+        /// <summary>
+        /// Calculates synodic age (in days) for a current moment
+        /// </summary>
+        /// <returns>Synodic age (in days) in range [0, <see cref="SynodicMonth"/>).</returns>
         public static double GetSynodicAgeNow()
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             return Mod((ToJulianDate(now) - ToJulianDate(NewMoonRef)), SynodicMonth);
         }
 
-        //returns synodic age for given days interval, (-1 , 5) -> from yesterday to 5 days in future at 12:00
-        public static List<double> GetSynodicAgeInterval(int from, int to)
-        {
-            List<double> result = new List<double>();
-            for (int i = from; i <= to; i++)
-            {
-                DateTimeOffset iDayTime = DateTimeOffset.UtcNow.Date.AddDays(i).AddHours(12);
-                result.Add(Mod((ToJulianDate(iDayTime) - ToJulianDate(NewMoonRef)), SynodicMonth));
-            }
-
-            return result;
-        }
-
-        //returns time of the next 4 MoonPhases, time is in given offset
-
+        /// <summary>
+        /// Returns appr. dates and times of the next major moon phases (New Moon, First Quarter, Full Moon, Last Quarter)
+        /// </summary>
+        /// <param name="tz">Target time zone for returned timestamps</param>
+        /// <returns>
+        /// Dictionary storing next occurrences of major <see cref="MoonPhases"/> as local times specified in <paramref name="tz"/>
+        /// </returns>
         public static Dictionary<MoonPhases, DateTimeOffset> GetNextMoonPhasesDates(TimeZoneInfo tz)
         {
             double lunarAge = GetSynodicAgeNow();
@@ -115,21 +125,14 @@ namespace Core
             return result;
         }
 
-        //returns moon phases (including crescents and gibbeons) on each day in specified interval from todays day
-        // eg. from = -2, to = 3, means that interval starts 2 days in the past and ends 3 days in the future inlcuding those days
-        public static List<MoonPhases> GetMoonPhasesInterval(int from, int to)
-        {
-            List<MoonPhases> result = new List<MoonPhases> ();
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-
-            for (int i = from; i <= to; i++)
-            {
-                result.Add(GetMoonPhase(now.Date.AddDays(i).AddHours(12)));
-            }
-
-            return result;
-        }
-
+        /// <summary>
+        /// Returns the moon phase category for a given UTC date and time
+        /// </summary>
+        /// <param name="date">UTC instant</param>
+        /// <param name="epsilon">
+        /// Phase boundary tolerance in days, by default it's 2.5 hours around major phases
+        /// </param>
+        /// <returns>Approximated <see cref="MoonPhases"/> for the given instant.</returns>
         public static MoonPhases GetMoonPhase(DateTimeOffset date, double epsilon = 2.5 / 24.0)
         {
             double lunarAge = GetSynodicAge(date);
@@ -178,46 +181,6 @@ namespace Core
 
         }
 
-        public static MoonPhases GetMoonPhaseNow(double epsilon = 2.5/24.0)
-        {
-            double lunarAge = GetSynodicAgeNow();
-            double now = ToJulianDate(DateTimeOffset.UtcNow);
-            double lastNewMoon = now - lunarAge;
-
-
-            double newMoonApproxTime = lastNewMoon + SynodicMonth;
-            double firstQuarterApproxTime = lastNewMoon + 0.25*SynodicMonth;
-            double fullMoonApproxTime = lastNewMoon + 0.5*SynodicMonth;
-            double lastQuarterApproxTime = lastNewMoon + 0.75*SynodicMonth;
-
-            if (Math.Abs(now - lastNewMoon) < epsilon){
-                return MoonPhases.NewMoon;
-            }
-            if (Math.Abs(now - firstQuarterApproxTime) < epsilon){
-                return MoonPhases.FirstQuarter;
-            }
-            if(now > lastNewMoon && now < firstQuarterApproxTime){
-                return MoonPhases.WaxingCrescent;
-            }
-            if (Math.Abs(now - fullMoonApproxTime) < epsilon){
-                return MoonPhases.FullMoon;
-            }
-            if(now > firstQuarterApproxTime && now < fullMoonApproxTime){
-                return MoonPhases.WaxingGibbous;
-            }
-            if (Math.Abs(now - lastQuarterApproxTime) < epsilon){
-                return MoonPhases.LastQuarter;
-            }
-            if(now > fullMoonApproxTime && now < lastQuarterApproxTime){
-                return MoonPhases.WaningGibbous;
-            }
-            if(Math.Abs(now - newMoonApproxTime) < epsilon){
-                return MoonPhases.NewMoon;
-            }
-            return MoonPhases.WaningCrescent;
-           
-        }
-
         private static double ToJulianDate(DateTimeOffset dto)
         {
             const double UnixEpochJD = 2440587.5;              
@@ -234,7 +197,5 @@ namespace Core
         {
             return ((a % m) + m) % m;
         }
-
-
     }
 }

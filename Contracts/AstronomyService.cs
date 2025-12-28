@@ -8,12 +8,22 @@ using System.Threading.Tasks;
 
 namespace Contracts
 {
+    /// <summary>
+    /// Maps internal cache models into WCF contract DTOs.
+    /// </summary>
     public static class ContractMapper
     {
 
         private static DateTimeOffset? ToTz(DateTimeOffset? utc, TimeZoneInfo tz) => utc.HasValue ? TimeZoneInfo.ConvertTime(utc.Value, tz) : utc;
 
         private static DateTimeOffset ToTz(DateTimeOffset utc, TimeZoneInfo tz) => TimeZoneInfo.ConvertTime(utc, tz);
+
+        /// <summary>
+        /// Maps weekly cache data into a WCF contract and converts all DateTimeOffset fields from UTC to <paramref name="tz"/> timezone
+        /// </summary>
+        /// <param name="dto">Internal weekly cache data.</param>
+        /// <param name="tz">User time zone used to convert returned timestamps</param>
+        /// <returns>Contract DTO</returns>
         public static WeeklyCacheDataContract WeeklyCacheToContract(WeeklyCacheData dto, TimeZoneInfo tz)
         {
             var newDaily = new List<DailyCacheDataContract>();
@@ -26,6 +36,9 @@ namespace Contracts
             };
         }
 
+        /// <summary>
+        /// Maps a single day cache object into a contract and converts all DateTimeOffset fields from UTC to <paramref name="tz"/> timezone
+        /// </summary>
         public static DailyCacheDataContract DailyCacheToContract(DailyCacheData dto, TimeZoneInfo tz)
         {
             return new DailyCacheDataContract
@@ -75,6 +88,9 @@ namespace Contracts
             };
         }
 
+        /// <summary>
+        /// Maps Instant cache object into a contract and converts all DateTimeOffset fields from UTC to <paramref name="tz"/> timezone
+        /// </summary>
         public static InstantCacheDataContract InstantCacheToContract(InstantCacheData dto, TimeZoneInfo tz)
         {
             return new InstantCacheDataContract
@@ -96,6 +112,9 @@ namespace Contracts
             };
         }
 
+        /// <summary>
+        /// Maps location cache object into a contract.
+        /// </summary>
         public static LocationCacheDataContract LocationCacheToContract(LocationCacheData dto)
         {
 
@@ -127,6 +146,9 @@ namespace Contracts
 
     }
 
+    /// <summary>
+    /// Weekly astronomy data returned to the client
+    /// </summary>
     [DataContract]
     public class WeeklyCacheDataContract
     {
@@ -135,13 +157,16 @@ namespace Contracts
 
     }
 
+    /// <summary>
+    /// Per-day astronomy data, local times are expressed as <see cref="DateTimeOffset"/> in the user's time zone.
+    /// Values that are non-constant in a day (e.g. Sun/Moon altitude/azimuth) are evaluated at noon for that day.
+    /// </summary>
     [DataContract]
     public class DailyCacheDataContract
     {
         [DataMember]
         public DateTime LocalDate { get; set; }
 
-        /* SunAltitude, SunDistance, SunAzimuth at noon local time */
         [DataMember]
         public double SunAltitude { get; set; }
         [DataMember]

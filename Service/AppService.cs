@@ -64,14 +64,14 @@ namespace Service
 
                 LocationCacheData loc = cacheStorage.LocationCacheData;
 
-                AstronomyTimeSeriesDto timeSeriesDto = await ipGeoClient.getAstronomyWeekAsync(
+                AstronomyTimeSeriesDto timeSeriesDto = await ipGeoClient.GetAstronomyRangeAsync(
                     loc.Latitude,
                     loc.Longitude,
                     DateTimeOffset.Now.AddDays(-1),
                     DateTimeOffset.Now.AddDays(5),
                     loc.IanaTimeZoneId
                 );
-
+                
                 AstronomyResponseDto astronomyDto = await ipGeoClient.GetAstronomyAsync(loc.Latitude, loc.Longitude, ianaId);
                 cacheStorage.SetLocation(new LocationCacheData
                 {
@@ -123,18 +123,6 @@ namespace Service
                     loc.IanaTimeZoneId
                 );
 
-                /*
-                loggingService.WriteInfo("updating local data to: " + dto.Location.City + "  in: " + dto.Location.CountryName);
-                cacheStorage.SetLocation(new LocationCacheData
-                {
-                    LastUpdateTime = DateTimeOffset.UtcNow,
-                    IanaTimeZoneId = loc.IanaTimeZoneId,
-                    Latitude = loc.Latitude,
-                    Longitude = loc.Longitude,
-                    City = dto.Location.City,
-                    CountryName = dto.Location.CountryName,
-                });*/
-
                 cacheStorage.RefreshInstantData(dto.Astronomy);
             }
             catch(Exception ex)
@@ -172,7 +160,7 @@ namespace Service
 
                 LocationCacheData loc = cacheStorage.LocationCacheData;
 
-                AstronomyTimeSeriesDto dto = await ipGeoClient.getAstronomyWeekAsync(
+                AstronomyTimeSeriesDto dto = await ipGeoClient.GetAstronomyRangeAsync(
                     loc.Latitude,
                     loc.Longitude,
                     DateTimeOffset.Now.AddDays(-1),
@@ -180,16 +168,7 @@ namespace Service
                     loc.IanaTimeZoneId
                 );
 
-                /*
-                cacheStorage.SetLocation(new LocationCacheData
-                {
-                    LastUpdateTime = DateTimeOffset.UtcNow,
-                    IanaTimeZoneId = loc.IanaTimeZoneId,
-                    Latitude = loc.Latitude,
-                    Longitude = loc.Longitude,
-                    City = dto.Location.City,
-                    CountryName = dto.Location.CountryName,
-                });*/
+
                 cacheStorage.RefreshWeeklyData(dto);
             }
             catch(Exception ex) {
@@ -277,7 +256,7 @@ namespace Service
         {
             LocationCacheData loc = cacheStorage.LocationCacheData;
 
-            AstronomyTimeSeriesDto timeSeriesDto = await ipGeoClient.getAstronomyWeekAsync(
+            AstronomyTimeSeriesDto timeSeriesDto = await ipGeoClient.GetAstronomyRangeAsync(
                 loc.Latitude,
                 loc.Longitude,
                 DateTimeOffset.Now.AddDays(-1),
