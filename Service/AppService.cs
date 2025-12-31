@@ -67,8 +67,8 @@ namespace Service
                 AstronomyTimeSeriesDto timeSeriesDto = await ipGeoClient.GetAstronomyRangeAsync(
                     loc.Latitude,
                     loc.Longitude,
-                    DateTimeOffset.Now.AddDays(-1),
-                    DateTimeOffset.Now.AddDays(5),
+                    DateTimeOffset.UtcNow.AddDays(-1),
+                    DateTimeOffset.UtcNow.AddDays(5),
                     loc.IanaTimeZoneId
                 );
                 
@@ -163,8 +163,8 @@ namespace Service
                 AstronomyTimeSeriesDto dto = await ipGeoClient.GetAstronomyRangeAsync(
                     loc.Latitude,
                     loc.Longitude,
-                    DateTimeOffset.Now.AddDays(-1),
-                    DateTimeOffset.Now.AddDays(5),
+                    DateTimeOffset.UtcNow.AddDays(-1),
+                    DateTimeOffset.UtcNow.AddDays(5),
                     loc.IanaTimeZoneId
                 );
 
@@ -174,7 +174,7 @@ namespace Service
             catch(Exception ex) {
             
                 loggingService.WriteError("Refreshing weekly data failed", ex);
-                if (cacheStorage.InstantCacheData != null)
+                if (cacheStorage.WeeklyCacheData != null)
                     return ContractMapper.WeeklyCacheToContract(cacheStorage.WeeklyCacheData, cacheStorage.LocationCacheData.UserTimeZoneInfo);
                 throw;
             }
@@ -188,6 +188,50 @@ namespace Service
 
     }
 
+    public class AstronomyWorker
+    {
+        private readonly CacheStorage cache;
+        private readonly IIpGeoClient client;
+        private readonly ILogger log;
+
+        public AstronomyWorker(CacheStorage cache, IIpGeoClient client, ILogger log)
+        {
+            this.cache = cache;
+            this.client = client;
+            this.log = log;
+        }
+
+        public async Task InitialFetchAsync()
+        {
+            try
+            {
+                await FetchAndUpdateAstronomyCacheAsync().ConfigureAwait(false);
+                log.WriteInfo("Initial data fetched from API");
+            }
+            catch (Exception ex)
+            {
+                log.WriteError("Initial fetch failed", ex);                
+            }
+        }
+
+        public async Task FetchAndUpdateAstronomyCacheAsync()
+        {
+            var location = cache.LocationCacheData;
+            var beg = DateTimeOffset.UtcNow.AddDays(-1);
+            var end = DateTimeOffset.UtcNow.AddDays(5);
+
+            var timeSeriesDto = await client.GetAstronomyRangeAsync(
+                location.Latitude, location.Longitude, beg, end, location.IanaTimeZoneId
+            ).ConfigureAwait(false);
+
+            var astronomyDto = await client.GetAstronomyAsync(
+                location.Latitude, location.Longitude, location.IanaTimeZoneId
+            ).ConfigureAwait(false);
+
+            cache.RefreshInstantData(astronomyDto.Astronomy);
+            cache.RefreshWeeklyData(timeSeriesDto);
+        }
+    }
     public class AppTester
     {
         public static void RunAsConsole()
@@ -196,6 +240,7 @@ namespace Service
             var logging = new LoggingService("AstronomyService", "Application");
             var ipGeo = new IpGeoClient(new HttpClient(), logging);
             var svc = new AstronomyService(cacheStorage, ipGeo, logging);
+
 
             using (var host = new ServiceHost(svc))
             {
@@ -217,36 +262,30 @@ namespace Service
         private AstronomyService astronomyService;
         private ServiceHost serviceHost;
         private ILogger loggingService;
-       
+        private AstronomyWorker worker;
+
         public AppService()
         {
             InitializeComponent();
         }
 
         protected override void OnStart(string[] args)
-        {            
-            loggingService = new LoggingService("AstronomyService" , "Application");            
+        {
+            loggingService = new LoggingService("AstronomyService", "Application");
             cacheStorage = new CacheStorage();
-
             ipGeoClient = new IpGeoClient(new HttpClient(), loggingService);
-            astronomyService = new AstronomyService(cacheStorage, ipGeoClient, loggingService);
 
-            serviceHost = new ServiceHost(astronomyService);
+           
+            var wcf = new AstronomyService(cacheStorage, ipGeoClient, loggingService);
+            serviceHost = new ServiceHost(wcf);
             serviceHost.Open();
 
+          
+            worker = new AstronomyWorker(cacheStorage, ipGeoClient, loggingService);
             loggingService.WriteInfo("Service starting");
 
-            Task.Run(async () =>
-            {
-                try
-                {
-                   await FetchAndUpdateAstronomyCache();
-                }
-                catch (Exception ex)
-                {
-                    loggingService.WriteInfo("Service failed to start");
-                }
-            });
+           
+            _ = Task.Run(() => worker.InitialFetchAsync());
 
         }
 
@@ -259,8 +298,8 @@ namespace Service
             AstronomyTimeSeriesDto timeSeriesDto = await ipGeoClient.GetAstronomyRangeAsync(
                 loc.Latitude,
                 loc.Longitude,
-                DateTimeOffset.Now.AddDays(-1),
-                DateTimeOffset.Now.AddDays(5),
+                DateTimeOffset.UtcNow.AddDays(-1),
+                DateTimeOffset.UtcNow.AddDays(5),
                 loc.IanaTimeZoneId
             );
 
