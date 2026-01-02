@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfClient.Services;
+using WpfClient.ViewModels;
 
 namespace WpfClient
 {
@@ -23,6 +25,18 @@ namespace WpfClient
         public MainWindow()
         {
             InitializeComponent();
+
+            IAstronomyServiceClient client = new AstronomyServiceClient(); 
+            DataContext = new MainViewModel(client);
+
+            Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+
+            var vm = (MainViewModel)DataContext;
+            await vm.InitAsync();
         }
     }
 }

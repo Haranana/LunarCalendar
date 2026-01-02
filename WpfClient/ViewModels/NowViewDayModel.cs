@@ -15,7 +15,7 @@ namespace WpfClient.ViewModels
 {
     public class NowViewDayModel : ViewModelBase
     {
-        private readonly AstronomyServiceClient serviceClient;
+        private readonly IAstronomyServiceClient serviceClient;
         private string currentDateAndTime;
         public string CurrentDateAndTime
         {
@@ -120,11 +120,11 @@ namespace WpfClient.ViewModels
         public RelayCommand SetDayCommand { get; }
         public RelayCommand SetNightCommand { get; }
 
-        public NowViewDayModel(AstronomyServiceClient svc)
+        public NowViewDayModel(IAstronomyServiceClient svc, bool autoRefresh = true)
         {
             serviceClient = svc;
             RefreshCommand = new AsyncRelayCommand(RefreshAsync);
-            Application.Current.Dispatcher.InvokeAsync(async () => await RefreshAsync());
+            if(autoRefresh) Application.Current.Dispatcher.InvokeAsync(async () => await RefreshAsync());
         }
 
         public async Task RefreshAsync()

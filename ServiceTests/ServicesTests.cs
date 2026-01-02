@@ -64,7 +64,7 @@ namespace Service.Tests
             [Test]
             public async Task GetFreshInstant_WhenCacheExpired_CallsApi()
             {
-                // Arrange: brak danych => stale
+                // Arrange
                 cacheStorage.InvalidateInstant();
 
                 ipGeoClient.AstronomyToReturn = MakeAstronomyResponseDto(city: "Torun", country: "Poland");

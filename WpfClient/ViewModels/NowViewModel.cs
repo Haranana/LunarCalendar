@@ -20,7 +20,8 @@ namespace WpfClient.ViewModels
 {
     public class NowViewModel : ViewModelBase
     {
-        private readonly AstronomyServiceClient serviceClient;
+        private readonly IAstronomyServiceClient serviceClient;
+        private IImageProvider imageProvider;
 
         private string nextFullMoonDate;
         public string NextFullMoonDate
@@ -116,11 +117,12 @@ namespace WpfClient.ViewModels
         public RelayCommand SetDayCommand { get; }
         public RelayCommand SetNightCommand { get; }
 
-        public NowViewModel(AstronomyServiceClient svc)
+        public NowViewModel(IAstronomyServiceClient svc, bool autoRefresh = true)
         {
             serviceClient = svc;
             RefreshCommand = new AsyncRelayCommand(RefreshAsync);
-            Application.Current.Dispatcher.InvokeAsync(async () => await RefreshAsync());
+            imageProvider = new ImageProvider();
+            if (autoRefresh) Application.Current.Dispatcher.InvokeAsync(async () => await RefreshAsync());
         }
 
         public async Task RefreshAsync()
@@ -148,39 +150,31 @@ namespace WpfClient.ViewModels
             CurrentDateAndTime = data.Date.ToString("dd-MM-yyyy") + " - " + Data.CurrentTime.ToString(@"hh\:mm");
             MorningBlueHour = dailyData.MorningBlueHourBegin?.ToString("HH:mm") + " - " + dailyData.MorningBlueHourEnd?.ToString("HH:mm");
             EveningBlueHour = dailyData.EveningBlueHourBegin?.ToString("HH:mm") + " - " + dailyData.EveningBlueHourEnd?.ToString("HH:mm");
-
+            CurrentMoonPhaseImage = imageProvider.getMoonImage(data.MoonPhase);
             switch (data.MoonPhase)
             {
                 case MoonPhases.NewMoon:
                     MoonPhaseName = "New Moon";
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/NewMoon.png"));
                     break;
                 case MoonPhases.WaxingCrescent:
                     MoonPhaseName = "Waxing Crescent";
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/WaxingCrescent.png"));
                     break;
                 case MoonPhases.WaningCrescent:
                     MoonPhaseName = "Waning Crescent";
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/WaningCrescent.png"));
                     break;
                 case MoonPhases.FullMoon:
                     MoonPhaseName = "Full Moon";
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/FullMoon.png"));
                     break;
                 case MoonPhases.WaxingGibbous:
                     MoonPhaseName = "Waxing Gibbous";
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/WaxingGibbous.png"));
                     break;
                 case MoonPhases.WaningGibbous:
                     MoonPhaseName = "Waning Gibbous";
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/WaningGibbous.png"));
                     break;
                 case MoonPhases.FirstQuarter:
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/FirstQuarter.png"));
                     MoonPhaseName = "First Quarter";
                     break;
                 case MoonPhases.LastQuarter:
-                    CurrentMoonPhaseImage = new BitmapImage(new Uri("pack://application:,,,/Assets/LastQuarter.png"));
                     MoonPhaseName = "Last Quarter";
                     break;
             }

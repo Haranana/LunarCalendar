@@ -10,18 +10,18 @@ namespace WpfClient.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly AstronomyServiceClient _svc;
+        private readonly IAstronomyServiceClient astronomyServiceClient;
 
         public NowViewModel Now { get; }
         public NowViewDayModel NowDay { get; }
         public WeekViewModel Week { get; }
         public SettingsViewModel Settings { get; }
 
-        private ViewModelBase _currentPage;
+        private ViewModelBase currentPage;
         public ViewModelBase CurrentPage
         {
-            get => _currentPage;
-            set => Set(ref _currentPage, value);
+            get => currentPage;
+            set => Set(ref currentPage, value);
         }
 
         public RelayCommand GoNowCommand { get; }
@@ -30,14 +30,14 @@ namespace WpfClient.ViewModels
         public RelayCommand GoWeekCommand { get; }
         public RelayCommand GoSettingsCommand { get; }
 
-        public MainViewModel()
+        public MainViewModel(IAstronomyServiceClient astronomyServiceClient)
         {
-            _svc = new AstronomyServiceClient();
+            astronomyServiceClient = new AstronomyServiceClient();
 
-            Now = new NowViewModel(_svc);
-            NowDay = new NowViewDayModel(_svc);
-            Week = new WeekViewModel(_svc);
-            Settings = new SettingsViewModel(_svc, Now, Week);
+            Now = new NowViewModel(astronomyServiceClient);
+            NowDay = new NowViewDayModel(astronomyServiceClient);
+            Week = new WeekViewModel(astronomyServiceClient);
+            Settings = new SettingsViewModel(astronomyServiceClient, Now, Week);
 
             GoNowCommand = new RelayCommand(() => CurrentPage = Now);
             GoNowDayCommand = new RelayCommand(()=>CurrentPage = NowDay);
@@ -49,6 +49,13 @@ namespace WpfClient.ViewModels
             Now.RefreshCommand.Execute(null);
             Week.RefreshCommand.Execute(null);
             Settings.LoadLocationCommand.Execute(null);
+        }
+
+        public async Task InitAsync()
+        {
+            Now.RefreshAsync();
+            Week.RefreshAsync();
+            Settings.LoadLocationAsync();
         }
     }
 }

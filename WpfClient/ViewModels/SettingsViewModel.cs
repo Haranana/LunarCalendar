@@ -12,7 +12,7 @@ namespace WpfClient.ViewModels
 {
     public class SettingsViewModel : ViewModelBase
     {
-        private readonly AstronomyServiceClient astronomyServiceClient;
+        private readonly IAstronomyServiceClient astronomyServiceClient;
         private readonly NowViewModel nowViewModel;
         private readonly WeekViewModel weekViewModel;
 
@@ -23,32 +23,32 @@ namespace WpfClient.ViewModels
             set => Set(ref locationData, value);
         }
 
-        private string _latText;
+        private string latText;
         public string LatText
         {
-            get => _latText;
-            set => Set(ref _latText, value);
+            get => latText;
+            set => Set(ref latText, value);
         }
 
-        private string _lonText;
+        private string lonText;
         public string LonText
         {
-            get => _lonText;
-            set => Set(ref _lonText, value);
+            get => lonText;
+            set => Set(ref lonText, value);
         }
 
-        private string _status;
+        private string statusText;
         public string Status
         {
-            get => _status;
-            set => Set(ref _status, value);
+            get => statusText;
+            set => Set(ref statusText, value);
         }
 
         public AsyncRelayCommand LoadLocationCommand { get; }
         public AsyncRelayCommand UpdateLocationCommand { get; }
         public AsyncRelayCommand ForceRefreshAllCommand { get; }
 
-        public SettingsViewModel(AstronomyServiceClient svc, NowViewModel now, WeekViewModel week)
+        public SettingsViewModel(IAstronomyServiceClient svc, NowViewModel now, WeekViewModel week)
         {
             astronomyServiceClient = svc;
             nowViewModel = now;
@@ -59,7 +59,7 @@ namespace WpfClient.ViewModels
             ForceRefreshAllCommand = new AsyncRelayCommand(ForceRefreshAllAsync);
         }
 
-        private async Task LoadLocationAsync()
+        public async Task LoadLocationAsync()
         {
             try
             {
@@ -77,7 +77,7 @@ namespace WpfClient.ViewModels
             }
         }
 
-        private async Task UpdateLocationAsync()
+        public async Task UpdateLocationAsync()
         {
             if (!double.TryParse(LatText, NumberStyles.Float, CultureInfo.InvariantCulture, out var lat) ||
                 !double.TryParse(LonText, NumberStyles.Float, CultureInfo.InvariantCulture, out var lon))

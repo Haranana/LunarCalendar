@@ -1,14 +1,25 @@
 ﻿using Contracts;
 using System;
-using System.ServiceModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WpfClient.Services
 {
-    public sealed class AstronomyServiceClient : IDisposable
+    public interface IAstronomyServiceClient
+    {
+        Task<InstantCacheDataContract> GetFreshInstantAsync();
+
+        Task<WeeklyCacheDataContract> GetFreshWeeklyAsync();
+
+        Task UpdateLocationDataAsync(double lat, double lon);
+
+        Task<LocationCacheDataContract> GetLocationDataAsync();
+    }
+    public class AstronomyServiceClient : IDisposable , IAstronomyServiceClient
     {
         private readonly ChannelFactory<IAstronomyService> channelFactory;
 
