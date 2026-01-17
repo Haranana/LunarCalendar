@@ -38,13 +38,21 @@ namespace Core
             ApiUrl = AllAppSettings["IPGEO_URL"];
             ApiKey = Environment.GetEnvironmentVariable("IPGEO_API_KEY");
 
-            loggingService.WriteInfo("IPGEO_API_KEY present=" + (!string.IsNullOrWhiteSpace(ApiKey)));
+
 
             if (string.IsNullOrWhiteSpace(ApiKey))
+            {
+                loggingService.WriteError("Ip Geo client couldn't be initialized, missing API KEY in env");
                 throw new InvalidOperationException("missing API KEY environment variable");
+            }
 
             if (string.IsNullOrWhiteSpace(ApiUrl))
+            {
+                loggingService.WriteError("Ip Geo client couldn't be initialized, config is missing API URL");
                 throw new InvalidOperationException("config is missing API URL");
+            }
+
+            loggingService.WriteInfo("Ip Geo client initialized");
         }
 
         /// <summary>
@@ -80,14 +88,13 @@ namespace Core
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    loggingService.WriteWarning($"API astronomy timeSeries request failed, error: {response.StatusCode}. lat={lat}, lon={lon}, tz={ianaId}");
+                    loggingService.WriteWarning($"API astronomy timeSeries request failed, error: {response.StatusCode}");
                     throw new HttpRequestException($"API error {response.StatusCode} : {responseBody}");
 
                 }
                 else
                 {
-                    var bodyToWrite = responseBody.Length > 5000 ? responseBody.Substring(0, 5000) : responseBody;
-                    loggingService.WriteInfo($"API call to url: {url}{Environment.NewLine}API returned: {response.StatusCode}{Environment.NewLine}{bodyToWrite}");
+                    loggingService.WriteInfo($"API astronomy timeSeries request successful");
                 }
 
                     return JsonConvert.DeserializeObject<AstronomyTimeSeriesDto>(responseBody);
@@ -134,8 +141,7 @@ namespace Core
                 }
                 else
                 {
-                    var bodyToWrite = responseBody.Length > 1000 ? responseBody.Substring(0, 1000) : responseBody;
-                    loggingService.WriteInfo($"API call to url: {url}{Environment.NewLine}API returned: {response.StatusCode}{Environment.NewLine}{bodyToWrite}");
+                    loggingService.WriteInfo($"API astronomy request successful");
                 }
 
                 return JsonConvert.DeserializeObject<AstronomyResponseDto>(responseBody);

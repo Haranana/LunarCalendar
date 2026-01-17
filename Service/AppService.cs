@@ -86,9 +86,9 @@ namespace Service
                 cacheStorage.RefreshInstantData(astronomyDto.Astronomy);
                 cacheStorage.RefreshWeeklyData(timeSeriesDto);
             }
-            catch
+            catch(Exception ex)
             {
-                loggingService.WriteError($"Location updated failed for lat: {lat} and lon:{lon}");
+                loggingService.WriteError($"Location updated failed", ex);
             }
             finally
             {
@@ -232,29 +232,6 @@ namespace Service
             cache.RefreshWeeklyData(timeSeriesDto);
         }
     }
-    public class AppTester
-    {
-        public static void RunAsConsole()
-        {
-            var cacheStorage = new CacheStorage();
-            var logging = new LoggingService("AstronomyService", "Application");
-            var ipGeo = new IpGeoClient(new HttpClient(), logging);
-            var svc = new AstronomyService(cacheStorage, ipGeo, logging);
-
-
-            using (var host = new ServiceHost(svc))
-            {
-                host.Open(); 
-
-                
-                Console.WriteLine("WCF host is running. Press ENTER to stop.");
-                Console.ReadLine();
-
-                host.Close();
-            }
-        }
-
-    }
     public partial class AppService : ServiceBase
     {
         private CacheStorage cacheStorage;
@@ -266,6 +243,7 @@ namespace Service
 
         public AppService()
         {
+            this.ServiceName = "AstronomyService";
             InitializeComponent();
         }
 
@@ -289,29 +267,6 @@ namespace Service
 
         }
 
-
-
-        public async Task FetchAndUpdateAstronomyCache()
-        {
-            LocationCacheData loc = cacheStorage.LocationCacheData;
-
-            AstronomyTimeSeriesDto timeSeriesDto = await ipGeoClient.GetAstronomyRangeAsync(
-                loc.Latitude,
-                loc.Longitude,
-                DateTimeOffset.UtcNow.AddDays(-1),
-                DateTimeOffset.UtcNow.AddDays(5),
-                loc.IanaTimeZoneId
-            );
-
-            AstronomyResponseDto astronomyDto = await ipGeoClient.GetAstronomyAsync(loc.Latitude, loc.Longitude, loc.IanaTimeZoneId);
-
-
-            cacheStorage.RefreshInstantData(astronomyDto.Astronomy);
-            cacheStorage.RefreshWeeklyData(timeSeriesDto);
-
-            loggingService.WriteInfo("Initial data fetched from API");
-        }
-
         protected override void OnStop()
         {
             loggingService?.WriteInfo("Service stopping");
@@ -319,7 +274,7 @@ namespace Service
             try { serviceHost?.Close(); }
             catch { serviceHost?.Abort(); }
         }
-
+        
 
     }
 }
